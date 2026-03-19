@@ -1,4 +1,4 @@
-﻿using FastFoodAPI.Entities;
+﻿using UserManagementAPI.Entities;
 
 public class RefreshToken
 {

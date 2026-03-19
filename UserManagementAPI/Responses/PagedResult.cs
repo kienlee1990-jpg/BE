@@ -1,4 +1,4 @@
-﻿namespace FastFoodAPI.Responses
+﻿namespace UserManagementAPI.Responses
 {
     public class PagedResult<T>
     {

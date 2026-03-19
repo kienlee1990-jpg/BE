@@ -1,7 +1,7 @@
-﻿using FastFoodAPI.Responses;
+﻿using UserManagementAPI.Responses;
 using System.Net;
 using System.Text.Json;
-namespace FastFoodAPI.Middlewares;
+namespace UserManagementAPI.Middlewares;
 
 public class ExceptionMiddleware
 {

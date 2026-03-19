@@ -1,8 +1,8 @@
-﻿using FastFoodAPI.DTOs;
-using FastFoodAPI.DTOs.Auth;
+﻿using UserManagementAPI.DTOs;
+using UserManagementAPI.DTOs.Auth;
 using System.Security.Claims;
 
-namespace FastFoodAPI.Interfaces;
+namespace UserManagementAPI.Interfaces;
 
 public interface IAuthService
 {

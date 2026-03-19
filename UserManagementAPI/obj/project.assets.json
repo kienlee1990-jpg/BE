@@ -4545,23 +4545,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Lecoo\\.nuget\\packages\\": {},
+    "C:\\Users\\AD MIN\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\FastFoodAPI.csproj",
-      "projectName": "FastFoodAPI",
-      "projectPath": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\FastFoodAPI.csproj",
-      "packagesPath": "C:\\Users\\Lecoo\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\obj\\",
+      "projectUniqueName": "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\UserManagementAPI.csproj",
+      "projectName": "UserManagementAPI",
+      "projectPath": "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\UserManagementAPI.csproj",
+      "packagesPath": "C:\\Users\\AD MIN\\.nuget\\packages\\",
+      "outputPath": "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Lecoo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\AD MIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -4588,7 +4588,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -4640,7 +4640,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace FastFoodAPI.Entities;
+namespace UserManagementAPI.Entities;
 
 public class ApplicationUser : IdentityUser
 {

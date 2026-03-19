@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 
-namespace FastFoodAPI.Helpers
+namespace UserManagementAPI.Helpers
 {
     public static class StringHelper
     {

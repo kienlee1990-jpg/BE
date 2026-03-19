@@ -1,10 +1,10 @@
-﻿using FastFoodAPI.DTOs;
-using FastFoodAPI.DTOs.Auth;
-using FastFoodAPI.Interfaces;
+﻿using UserManagementAPI.DTOs;
+using UserManagementAPI.DTOs.Auth;
+using UserManagementAPI.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FastFoodAPI.Controllers;
+namespace UserManagementAPI.Controllers;
 
 [ApiController]
 [Route("api/auth")]

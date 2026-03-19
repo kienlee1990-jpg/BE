@@ -1,4 +1,4 @@
-﻿namespace FastFoodAPI.DTOs.Auth
+﻿namespace UserManagementAPI.DTOs.Auth
 {
     public class AuthResponseDto
     {

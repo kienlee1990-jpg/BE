@@ -1,7 +1,7 @@
-﻿using FastFoodAPI.Entities;
+﻿using UserManagementAPI.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace FastFoodAPI.Extensions;
+namespace UserManagementAPI.Extensions;
 
 public static class SeedDataExtensions
 {

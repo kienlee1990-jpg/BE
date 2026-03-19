@@ -1,4 +1,4 @@
-﻿namespace FastFoodAPI.DTOs;
+﻿namespace UserManagementAPI.DTOs;
 
 public class LoginDto
 {

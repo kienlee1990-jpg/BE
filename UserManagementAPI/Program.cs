@@ -1,9 +1,9 @@
-﻿using FastFoodAPI.Data;
-using FastFoodAPI.Entities;
-using FastFoodAPI.Extensions;
-using FastFoodAPI.Interfaces;
-using FastFoodAPI.Middlewares;
-using FastFoodAPI.Services;
+﻿using UserManagementAPI.Data;
+using UserManagementAPI.Entities;
+using UserManagementAPI.Extensions;
+using UserManagementAPI.Interfaces;
+using UserManagementAPI.Middlewares;
+using UserManagementAPI.Services;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -34,15 +34,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 #region DI Services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IFoodService, FoodService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IComboService, ComboService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IInventoryService, InventoryService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<ICheckoutService, CheckoutService>();
-builder.Services.AddScoped<CheckoutService>();
 #endregion
 
 #region JWT Authentication

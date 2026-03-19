@@ -1,11 +1,11 @@
-﻿using FastFoodAPI.DTOs.User;
-using FastFoodAPI.Entities;
-using FastFoodAPI.Interfaces;
-using FastFoodAPI.Responses;
+﻿using UserManagementAPI.DTOs.User;
+using UserManagementAPI.Entities;
+using UserManagementAPI.Interfaces;
+using UserManagementAPI.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FastFoodAPI.Services;
+namespace UserManagementAPI.Services;
 
 public class UserService : IUserService
 {

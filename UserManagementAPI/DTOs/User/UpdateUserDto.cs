@@ -1,4 +1,4 @@
-﻿namespace FastFoodAPI.DTOs.User;
+﻿namespace UserManagementAPI.DTOs.User;
 
 public class UpdateUserDto
 {

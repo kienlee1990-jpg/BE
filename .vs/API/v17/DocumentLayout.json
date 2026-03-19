@@ -1,26 +1,10 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\",
+  "WorkspaceRootPath": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|c:\\users\\lecoo\\source\\repos\\fastfoodapi\\usermanagementapi\\services\\checkoutservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|solutionrelative:usermanagementapi\\services\\checkoutservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|c:\\users\\lecoo\\source\\repos\\fastfoodapi\\usermanagementapi\\controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|solutionrelative:usermanagementapi\\controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|c:\\users\\lecoo\\source\\repos\\fastfoodapi\\usermanagementapi\\controllers\\checkoutcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|solutionrelative:usermanagementapi\\controllers\\checkoutcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|c:\\users\\lecoo\\source\\repos\\fastfoodapi\\usermanagementapi\\interfaces\\icartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|solutionrelative:usermanagementapi\\interfaces\\icartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|c:\\users\\lecoo\\source\\repos\\fastfoodapi\\usermanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\FastFoodAPI.csproj|solutionrelative:usermanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\PhongKham.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\usermanagementapi\\usermanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\PhongKham.csproj|solutionrelative:usermanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,66 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "CheckoutService.cs",
-              "DocumentMoniker": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Services\\CheckoutService.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Services\\CheckoutService.cs",
-              "ToolTip": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Services\\CheckoutService.cs",
-              "RelativeToolTip": "UserManagementAPI\\Services\\CheckoutService.cs",
-              "ViewState": "AgIAAIkAAAAAAAAAAAAuwKYAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T11:02:59.568Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Program.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Program.cs",
               "RelativeDocumentMoniker": "UserManagementAPI\\Program.cs",
-              "ToolTip": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Program.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Program.cs",
               "RelativeToolTip": "UserManagementAPI\\Program.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAACwAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-28T10:57:39.051Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CartController.cs",
-              "DocumentMoniker": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Controllers\\CartController.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Controllers\\CartController.cs",
-              "ToolTip": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Controllers\\CartController.cs",
-              "RelativeToolTip": "UserManagementAPI\\Controllers\\CartController.cs",
-              "ViewState": "AgIAAE4AAAAAAAAAAAAkwIQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T10:34:40.329Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "CheckoutController.cs",
-              "DocumentMoniker": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Controllers\\CheckoutController.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Controllers\\CheckoutController.cs",
-              "ToolTip": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Controllers\\CheckoutController.cs",
-              "RelativeToolTip": "UserManagementAPI\\Controllers\\CheckoutController.cs",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAuwDsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T10:34:14.752Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ICartService.cs",
-              "DocumentMoniker": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Interfaces\\ICartService.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Interfaces\\ICartService.cs",
-              "ToolTip": "C:\\Users\\Lecoo\\source\\repos\\FastFoodAPI\\UserManagementAPI\\Interfaces\\ICartService.cs",
-              "RelativeToolTip": "UserManagementAPI\\Interfaces\\ICartService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T10:29:13.091Z",
               "EditorCaption": ""
             }
           ]

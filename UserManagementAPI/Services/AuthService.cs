@@ -1,9 +1,9 @@
-﻿using FastFoodAPI.Data;
-using FastFoodAPI.DTOs;
-using FastFoodAPI.DTOs.Auth;
-using FastFoodAPI.Entities;
-using FastFoodAPI.Helper;
-using FastFoodAPI.Interfaces;
+﻿using UserManagementAPI.Data;
+using UserManagementAPI.DTOs;
+using UserManagementAPI.DTOs.Auth;
+using UserManagementAPI.Entities;
+using UserManagementAPI.Helper;
+using UserManagementAPI.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FastFoodAPI.Services;
+namespace UserManagementAPI.Services;
 
 public class AuthService : IAuthService
 {

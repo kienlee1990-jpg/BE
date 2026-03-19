@@ -1,7 +1,7 @@
-﻿using FastFoodAPI.DTOs.User;
-using FastFoodAPI.Responses;
+﻿using UserManagementAPI.DTOs.User;
+using UserManagementAPI.Responses;
 
-namespace FastFoodAPI.Interfaces;
+namespace UserManagementAPI.Interfaces;
 
 public interface IUserService
 {

@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace FastFoodAPI.Helper;
+namespace UserManagementAPI.Helper;
 
 public static class TokenHelper
 {
