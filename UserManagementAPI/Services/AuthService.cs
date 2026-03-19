@@ -18,17 +18,29 @@ public class AuthService : IAuthService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _config;
     private readonly ApplicationDbContext _context;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         IConfiguration config,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        ILogger<AuthService> logger)
     {
         _userManager = userManager;
         _config = config;
         _context = context;
+        _logger = logger;
     }
 
+    private int AccessTokenExpirationHours =>
+        int.Parse(_config["Jwt:AccessTokenExpirationHours"] ?? "3");
+
+    private int RefreshTokenExpirationDays =>
+        int.Parse(_config["Jwt:RefreshTokenExpirationDays"] ?? "7");
+
+    private const string DefaultRole = "Customer";
+
+    // ================= REGISTER =================
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
         var user = new ApplicationUser
@@ -44,48 +56,52 @@ public class AuthService : IAuthService
         var result = await _userManager.CreateAsync(user, dto.Password);
 
         if (!result.Succeeded)
-            throw new Exception(string.Join(",", result.Errors.Select(x => x.Description)));
+            throw new ApplicationException(string.Join(",", result.Errors.Select(x => x.Description)));
 
-        await _userManager.AddToRoleAsync(user, "Customer");
+        await _userManager.AddToRoleAsync(user, DefaultRole);
 
-        // 🔥 tạo token luôn sau khi register (best practice)
-        var accessToken = await GenerateJwtAsync(user);
+        _logger.LogInformation("User registered: {Email}", user.Email);
 
-        var refreshToken = new RefreshToken
-        {
-            Token = TokenHelper.GenerateRefreshToken(),
-            Expires = DateTime.UtcNow.AddDays(7),
-            UserId = user.Id,
-            IsRevoked = false
-        };
-
-        _context.RefreshTokens.Add(refreshToken);
-        await _context.SaveChangesAsync();
-
-        return new AuthResponseDto
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken.Token,
-            Expiration = DateTime.UtcNow.AddHours(3)
-        };
+        return await GenerateAuthResponse(user);
     }
 
+    // ================= LOGIN =================
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
-        if (user == null ||
-            !await _userManager.CheckPasswordAsync(user, dto.Password))
-            throw new Exception("Invalid email or password");
+        if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+        {
+            _logger.LogWarning("Login failed for {Email}", dto.Email);
+            throw new UnauthorizedAccessException("Invalid email or password");
+        }
 
+        _logger.LogInformation("User logged in: {Email}", user.Email);
+
+        return await GenerateAuthResponse(user);
+    }
+
+    // ================= CORE TOKEN GENERATION =================
+    private async Task<AuthResponseDto> GenerateAuthResponse(ApplicationUser user)
+    {
         var accessToken = await GenerateJwtAsync(user);
+
+        // 🔥 XÓA refresh token cũ (1 user = 1 token)
+        var oldTokens = await _context.RefreshTokens
+            .Where(x => x.UserId == user.Id && !x.IsRevoked)
+            .ToListAsync();
+
+        foreach (var t in oldTokens)
+        {
+            t.IsRevoked = true;
+            t.RevokedAt = DateTime.UtcNow;
+        }
 
         var refreshToken = new RefreshToken
         {
             Token = TokenHelper.GenerateRefreshToken(),
-            Expires = DateTime.UtcNow.AddDays(7),
-            UserId = user.Id,
-            IsRevoked = false
+            Expires = DateTime.UtcNow.AddDays(RefreshTokenExpirationDays),
+            UserId = user.Id
         };
 
         _context.RefreshTokens.Add(refreshToken);
@@ -95,37 +111,37 @@ public class AuthService : IAuthService
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken.Token,
-            Expiration = DateTime.UtcNow.AddHours(3)
+            Expiration = DateTime.UtcNow.AddHours(AccessTokenExpirationHours)
         };
     }
 
+    // ================= JWT =================
     private async Task<string> GenerateJwtAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
 
         var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(ClaimTypes.Email, user.Email ?? "")
-    };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email ?? "")
+        };
 
-        foreach (var role in roles)
-            claims.Add(new Claim(ClaimTypes.Role, role));
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
 
         var token = new JwtSecurityToken(
             issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"], // ✅ FIX TẠI ĐÂY
+            audience: _config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(3),
+            expires: DateTime.UtcNow.AddHours(AccessTokenExpirationHours),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-
+    // ================= REFRESH TOKEN =================
     public async Task<AuthResponseDto> RefreshTokenAsync(string token)
     {
         var refreshToken = await _context.RefreshTokens
@@ -135,90 +151,77 @@ public class AuthService : IAuthService
         if (refreshToken == null ||
             refreshToken.IsRevoked ||
             refreshToken.Expires < DateTime.UtcNow)
-            throw new Exception("Invalid refresh token");
+        {
+            throw new UnauthorizedAccessException("Invalid refresh token");
+        }
 
-        // revoke token cũ
+        // 🔥 Token rotation
         refreshToken.IsRevoked = true;
+        refreshToken.RevokedAt = DateTime.UtcNow;
 
-        var newRefreshToken = new RefreshToken
-        {
-            Token = TokenHelper.GenerateRefreshToken(),
-            Expires = DateTime.UtcNow.AddDays(7),
-            UserId = refreshToken.UserId,
-            IsRevoked = false
-        };
+        _logger.LogInformation("Refresh token used for user {UserId}", refreshToken.UserId);
 
-        _context.RefreshTokens.Add(newRefreshToken);
-
-        var accessToken = await GenerateJwtAsync(refreshToken.User!);
-
-        await _context.SaveChangesAsync();
-
-        return new AuthResponseDto
-        {
-            AccessToken = accessToken,
-            RefreshToken = newRefreshToken.Token,
-            Expiration = DateTime.UtcNow.AddHours(3)
-        };
+        return await GenerateAuthResponse(refreshToken.User!);
     }
 
+    // ================= LOGOUT =================
     public async Task LogoutAsync(ClaimsPrincipal userPrincipal, string refreshToken)
     {
-        // 🔹 lấy userId từ JWT
         var userId = userPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+
         if (string.IsNullOrEmpty(userId))
             throw new UnauthorizedAccessException("Invalid token");
 
-        // 🔹 tìm refresh token
         var token = await _context.RefreshTokens
             .FirstOrDefaultAsync(x => x.Token == refreshToken);
 
         if (token == null)
-            throw new Exception("Refresh token not found");
+            throw new ApplicationException("Refresh token not found");
 
-        // 🔥 CHECK QUAN TRỌNG — token có thuộc user không
         if (token.UserId != userId)
-            throw new UnauthorizedAccessException("You cannot logout this token");
+            throw new UnauthorizedAccessException("Forbidden");
 
-        // 🔹 revoke token
         token.IsRevoked = true;
         token.RevokedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("User {UserId} logged out", userId);
     }
 
+    // ================= FORGOT PASSWORD =================
     public async Task RequestPasswordResetAsync(RequestPasswordResetDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
-        // bảo mật: luôn trả OK
         if (user == null)
             return;
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var encodedToken = Uri.EscapeDataString(token);
 
-        var resetLink =
-            $"https://yourdomain.com/reset-password?email={dto.Email}&token={encodedToken}";
+        var resetLink = $"{_config["App:ClientUrl"]}/reset-password?email={dto.Email}&token={encodedToken}";
 
-        // TODO: gửi email thật
-        Console.WriteLine($"RESET LINK: {resetLink}");
+        _logger.LogInformation("Password reset requested for {Email}", dto.Email);
+
+        // TODO: Inject EmailService
+        Console.WriteLine(resetLink);
     }
 
     public async Task ResetPasswordAsync(ResetPasswordDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
+
         if (user == null)
-            throw new Exception("Invalid request");
+            throw new ApplicationException("Invalid request");
 
         var decodedToken = Uri.UnescapeDataString(dto.Token);
 
-        var result = await _userManager.ResetPasswordAsync(
-            user,
-            decodedToken,
-            dto.NewPassword);
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken, dto.NewPassword);
 
         if (!result.Succeeded)
-            throw new Exception(string.Join(",", result.Errors.Select(x => x.Description)));
+            throw new ApplicationException(string.Join(",", result.Errors.Select(x => x.Description)));
+
+        _logger.LogInformation("Password reset successful for {Email}", dto.Email);
     }
 }
