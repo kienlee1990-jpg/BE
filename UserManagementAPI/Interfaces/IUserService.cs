@@ -1,4 +1,5 @@
-﻿using UserManagementAPI.DTOs.User;
+﻿using UserManagementAPI.DTOs.Admin;
+using UserManagementAPI.DTOs.User;
 using UserManagementAPI.Responses;
 
 namespace UserManagementAPI.Interfaces;

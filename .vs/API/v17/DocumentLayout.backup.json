@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\usermanagementapi\\usermanagementapi\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|solutionrelative:usermanagementapi\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\usermanagementapi\\usermanagementapi\\services\\adminuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|solutionrelative:usermanagementapi\\services\\adminuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\usermanagementapi\\usermanagementapi\\entities\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|solutionrelative:usermanagementapi\\entities\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\usermanagementapi\\usermanagementapi\\controllers\\adminusercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|solutionrelative:usermanagementapi\\controllers\\adminusercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\usermanagementapi\\usermanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|solutionrelative:usermanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\usermanagementapi\\usermanagementapi\\interfaces\\iadminuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\UserManagementAPI.csproj|solutionrelative:usermanagementapi\\interfaces\\iadminuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,45 +22,45 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Services\\AuthService.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Services\\AuthService.cs",
-              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Services\\AuthService.cs",
-              "RelativeToolTip": "UserManagementAPI\\Services\\AuthService.cs",
-              "ViewState": "AgIAALsAAAAAAAAAAAAAANQAAABCAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-19T11:04:43.749Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ApplicationUser.cs",
-              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Entities\\ApplicationUser.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Entities\\ApplicationUser.cs",
-              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Entities\\ApplicationUser.cs",
-              "RelativeToolTip": "UserManagementAPI\\Entities\\ApplicationUser.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "Title": "AdminUserController.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Controllers\\AdminUserController.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Controllers\\AdminUserController.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Controllers\\AdminUserController.cs",
+              "RelativeToolTip": "UserManagementAPI\\Controllers\\AdminUserController.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAswGAAAABXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-19T11:02:58.966Z",
+              "WhenOpened": "2026-03-22T09:08:47.085Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Program.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Program.cs",
-              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Program.cs",
-              "RelativeToolTip": "UserManagementAPI\\Program.cs",
-              "ViewState": "AgIAAE8AAAAAAAAAAAAQwH0AAAAKAAAAAAAAAA==",
+              "Title": "IAdminUserService.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Interfaces\\IAdminUserService.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Interfaces\\IAdminUserService.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Interfaces\\IAdminUserService.cs",
+              "RelativeToolTip": "UserManagementAPI\\Interfaces\\IAdminUserService.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA0AAABPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-19T11:01:26.037Z",
+              "WhenOpened": "2026-03-22T09:05:02.128Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AdminUserService.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Services\\AdminUserService.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Services\\AdminUserService.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\UserManagementAPI\\UserManagementAPI\\Services\\AdminUserService.cs",
+              "RelativeToolTip": "UserManagementAPI\\Services\\AdminUserService.cs",
+              "ViewState": "AgIAAO4AAAAAAAAAAAA8wI8BAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-22T09:01:49.328Z",
               "EditorCaption": ""
             }
           ]

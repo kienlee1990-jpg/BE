@@ -1,15 +1,16 @@
-﻿using UserManagementAPI.Data;
-using UserManagementAPI.Entities;
-using UserManagementAPI.Extensions;
-using UserManagementAPI.Interfaces;
-using UserManagementAPI.Middlewares;
-using UserManagementAPI.Services;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
+using UserManagementAPI.Authorization;
+using UserManagementAPI.Data;
+using UserManagementAPI.Entities;
+using UserManagementAPI.Interfaces;
+using UserManagementAPI.Middlewares;
+using UserManagementAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 #region DI Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+// 🔥 Permission Service
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+
+// 🔥 Authorization Handler
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 #endregion
 
 #region JWT Authentication
@@ -56,20 +64,38 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
 
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"], // ✅ FIX CHỖ NÀY
-
+        ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 #endregion
 
-builder.Services.AddAuthorization();
+#region Authorization Policies (RBAC)
+builder.Services.AddAuthorization(options =>
+{
+    // 🔥 Thêm permission dynamic sau này có thể seed
+    var permissions = new[]
+    {
+        "CreateMedicalRecord",
+        "DeleteMedicalRecord",
+        "ViewPatient",
+        "ProcessPayment",
+        "ManageUsers",
+    };
+
+    foreach (var permission in permissions)
+    {
+        options.AddPolicy(permission, policy =>
+            policy.Requirements.Add(new PermissionRequirement(permission)));
+    }
+});
+#endregion
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    // 🔐 Khai báo Bearer
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Nhập: Bearer {token}",
@@ -80,7 +106,6 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT"
     });
 
-    // 🔐 Bắt buộc dùng Bearer
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -116,11 +141,13 @@ app.UseAuthorization();
 app.MapControllers();
 #endregion
 
-#region Seed Roles + Admin
+#region Seed Roles + Admin + Permissions
 using (var scope = app.Services.CreateScope())
 {
-    await scope.ServiceProvider.SeedRolesAndAdminAsync();
+    var services = scope.ServiceProvider;
+    await SeedAdminUpdatePermissions.SeedAsync(services);
 }
+
 #endregion
 
 app.Run();

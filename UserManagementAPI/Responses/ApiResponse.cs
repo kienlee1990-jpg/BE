@@ -1,14 +1,22 @@
-﻿namespace UserManagementAPI.Responses;
-
-public class ApiResponse<T>
+﻿public class ApiResponse<T>
 {
     public bool Success { get; set; }
-    public string Message { get; set; }
-    public T Data { get; set; }
+    public string Message { get; set; } = "";
+    public T? Data { get; set; }   // 🔥 nullable
 
     public static ApiResponse<T> Ok(T data, string message = "Success")
-        => new() { Success = true, Message = message, Data = data };
+        => new()
+        {
+            Success = true,
+            Message = message,
+            Data = data
+        };
 
     public static ApiResponse<T> Fail(string message)
-        => new() { Success = false, Message = message };
+        => new()
+        {
+            Success = false,
+            Message = message,
+            Data = default // rõ ràng hơn
+        };
 }

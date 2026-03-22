@@ -8,7 +8,7 @@ namespace UserManagementAPI.Controllers;
 
 [ApiController]
 [Route("api/users")]
-[Authorize]
+[Authorize] // Tất cả endpoint đều require login
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -18,49 +18,23 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
 
-    // 🔵 ADMIN ONLY
-    [HttpGet]
-    public async Task<IActionResult> GetAllUsers()
-    {
-        var result = await _userService.GetAllUsersAsync();
-        return Ok(result);
-    }
 
-    // 🟡 ADMIN or OWNER
-    [HttpPut("{id}")]
-    [Authorize(Roles = "Admin,Customer")]
-    public async Task<IActionResult> UpdateUser(string id, UpdateUserDto dto)
-    {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var isAdmin = User.IsInRole("Admin");
+    // 🟡 ADMIN or OWNER - Cập nhật thông tin user
+    
 
-        var result = await _userService.UpdateUserAsync(
-            id,
-            currentUserId,
-            isAdmin,
-            dto);
-
-        if (!result.Success)
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
-    // 🟢 CURRENT USER PROFILE
+    // 🟢 CURRENT USER PROFILE - Lấy profile của chính mình
     [HttpGet("me")]
-    [Authorize]
     public async Task<IActionResult> GetMe()
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         if (string.IsNullOrEmpty(currentUserId))
             return Unauthorized();
 
-        var result = await _userService.GetUserByIdAsync(currentUserId);
+        var user = await _userService.GetUserByIdAsync(currentUserId);
 
-        if (result == null)
+        if (user == null)
             return NotFound();
 
-        return Ok(result);
+        return Ok(user);
     }
 }

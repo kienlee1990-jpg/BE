@@ -1,7 +1,6 @@
-﻿using UserManagementAPI.Responses;
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
-namespace UserManagementAPI.Middlewares;
+using UserManagementAPI.Middlewares;
 
 public class ExceptionMiddleware
 {
@@ -20,11 +19,25 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.ContentType = "application/json";
-
-            var response = ApiResponse<string>.Fail(ex.Message);
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await HandleExceptionAsync(context, ex);
         }
+    }
+
+    private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+    {
+        var statusCode = ex switch
+        {
+            NotFoundException => HttpStatusCode.NotFound,
+            BadRequestException => HttpStatusCode.BadRequest,
+            ForbiddenException => HttpStatusCode.Forbidden,
+            _ => HttpStatusCode.InternalServerError
+        };
+
+        var response = ApiResponse<string>.Fail(ex.Message);
+
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)statusCode;
+
+        return context.Response.WriteAsync(JsonSerializer.Serialize(response));
     }
 }

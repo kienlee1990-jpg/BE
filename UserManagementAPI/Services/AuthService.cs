@@ -19,17 +19,20 @@ public class AuthService : IAuthService
     private readonly IConfiguration _config;
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AuthService> _logger;
+    private readonly IPermissionService _permissionService;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         IConfiguration config,
         ApplicationDbContext context,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        IPermissionService permissionService)
     {
         _userManager = userManager;
         _config = config;
         _context = context;
         _logger = logger;
+        _permissionService = permissionService;
     }
 
     private int AccessTokenExpirationHours =>
@@ -54,11 +57,10 @@ public class AuthService : IAuthService
         };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
-
         if (!result.Succeeded)
             throw new ApplicationException(string.Join(",", result.Errors.Select(x => x.Description)));
 
-        await _userManager.AddToRoleAsync(user, DefaultRole);
+        //await _userManager.AddToRoleAsync(user, DefaultRole);
 
         _logger.LogInformation("User registered: {Email}", user.Email);
 
@@ -69,7 +71,6 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
-
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
             _logger.LogWarning("Login failed for {Email}", dto.Email);
@@ -77,7 +78,6 @@ public class AuthService : IAuthService
         }
 
         _logger.LogInformation("User logged in: {Email}", user.Email);
-
         return await GenerateAuthResponse(user);
     }
 
@@ -86,11 +86,10 @@ public class AuthService : IAuthService
     {
         var accessToken = await GenerateJwtAsync(user);
 
-        // 🔥 XÓA refresh token cũ (1 user = 1 token)
+        // Revoke old refresh tokens
         var oldTokens = await _context.RefreshTokens
             .Where(x => x.UserId == user.Id && !x.IsRevoked)
             .ToListAsync();
-
         foreach (var t in oldTokens)
         {
             t.IsRevoked = true;
@@ -103,7 +102,6 @@ public class AuthService : IAuthService
             Expires = DateTime.UtcNow.AddDays(RefreshTokenExpirationDays),
             UserId = user.Id
         };
-
         _context.RefreshTokens.Add(refreshToken);
         await _context.SaveChangesAsync();
 
@@ -119,6 +117,7 @@ public class AuthService : IAuthService
     private async Task<string> GenerateJwtAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
+        var permissions = await _permissionService.GetPermissionsAsync(user);
 
         var claims = new List<Claim>
         {
@@ -126,7 +125,11 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Email, user.Email ?? "")
         };
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        // Role claims
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+        // Permission claims
+        claims.AddRange(permissions.Select(p => new Claim("permission", p)));
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
@@ -148,19 +151,13 @@ public class AuthService : IAuthService
             .Include(x => x.User)
             .FirstOrDefaultAsync(x => x.Token == token);
 
-        if (refreshToken == null ||
-            refreshToken.IsRevoked ||
-            refreshToken.Expires < DateTime.UtcNow)
-        {
+        if (refreshToken == null || refreshToken.IsRevoked || refreshToken.Expires < DateTime.UtcNow)
             throw new UnauthorizedAccessException("Invalid refresh token");
-        }
 
-        // 🔥 Token rotation
         refreshToken.IsRevoked = true;
         refreshToken.RevokedAt = DateTime.UtcNow;
 
         _logger.LogInformation("Refresh token used for user {UserId}", refreshToken.UserId);
-
         return await GenerateAuthResponse(refreshToken.User!);
     }
 
@@ -168,7 +165,6 @@ public class AuthService : IAuthService
     public async Task LogoutAsync(ClaimsPrincipal userPrincipal, string refreshToken)
     {
         var userId = userPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
-
         if (string.IsNullOrEmpty(userId))
             throw new UnauthorizedAccessException("Invalid token");
 
@@ -177,51 +173,69 @@ public class AuthService : IAuthService
 
         if (token == null)
             throw new ApplicationException("Refresh token not found");
-
         if (token.UserId != userId)
             throw new UnauthorizedAccessException("Forbidden");
 
         token.IsRevoked = true;
         token.RevokedAt = DateTime.UtcNow;
-
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("User {UserId} logged out", userId);
     }
 
-    // ================= FORGOT PASSWORD =================
+    // ================= FORGOT / RESET PASSWORD =================
     public async Task RequestPasswordResetAsync(RequestPasswordResetDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
-
-        if (user == null)
-            return;
+        if (user == null) return;
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var encodedToken = Uri.EscapeDataString(token);
-
         var resetLink = $"{_config["App:ClientUrl"]}/reset-password?email={dto.Email}&token={encodedToken}";
 
         _logger.LogInformation("Password reset requested for {Email}", dto.Email);
-
-        // TODO: Inject EmailService
+        // TODO: inject EmailService để gửi mail
         Console.WriteLine(resetLink);
     }
 
     public async Task ResetPasswordAsync(ResetPasswordDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
-
         if (user == null)
             throw new ApplicationException("Invalid request");
 
         var decodedToken = Uri.UnescapeDataString(dto.Token);
-
         var result = await _userManager.ResetPasswordAsync(user, decodedToken, dto.NewPassword);
 
         if (!result.Succeeded)
             throw new ApplicationException(string.Join(",", result.Errors.Select(x => x.Description)));
 
         _logger.LogInformation("Password reset successful for {Email}", dto.Email);
+    }
+
+    // ================= GET ME =================
+    public async Task<(string UserId, string Email, string FullName, List<string> Roles, List<string> Permissions)> GetCurrentUserAsync(string userId)
+    {
+        var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            return (null!, null!, null!, new List<string>(), new List<string>());
+
+        // Lấy role
+        var roles = (await _userManager.GetRolesAsync(user)).ToList();
+
+        // Lấy permission chỉ IsGranted = true
+        var permissions = await _context.UserPermissions
+            .Where(up => up.UserId == userId && up.IsGranted)
+            .Join(_context.Permissions,
+                  up => up.PermissionId,
+                  p => p.Id,
+                  (up, p) => p.Name)
+            .Distinct()
+            .ToListAsync();
+
+        return (user.Id, user.Email, user.FullName, roles, permissions);
     }
 }

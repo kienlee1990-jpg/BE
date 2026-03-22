@@ -4,6 +4,7 @@ using UserManagementAPI.Interfaces;
 using UserManagementAPI.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using UserManagementAPI.DTOs.Admin;
 
 namespace UserManagementAPI.Services;
 
