@@ -43,10 +43,41 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
-        var result = await _authService.LoginAsync(dto);
-        return Ok(result);
-    }
+        try
+        {
+            var result = await _authService.LoginAsync(dto);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            // 🚫 Tài khoản bị khóa
+            if (ex.Message == "ACCOUNT_INACTIVE")
+            {
+                return StatusCode(403, new
+                {
+                    code = "ACCOUNT_INACTIVE",
+                    message = "Tài khoản đã bị khóa"
+                });
+            }
 
+            // ❌ Sai tài khoản / mật khẩu
+            if (ex.Message == "INVALID_CREDENTIALS")
+            {
+                return Unauthorized(new
+                {
+                    code = "INVALID_CREDENTIALS",
+                    message = "Sai tài khoản hoặc mật khẩu"
+                });
+            }
+
+            // 💥 Lỗi khác
+            return StatusCode(500, new
+            {
+                code = "SERVER_ERROR",
+                message = "Lỗi hệ thống"
+            });
+        }
+    }
     // ================= REFRESH TOKEN =================
     [HttpPost("refresh-token")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto dto)

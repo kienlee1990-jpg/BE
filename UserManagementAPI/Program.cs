@@ -36,11 +36,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 #region DI Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
-// 🔥 Permission Service
 builder.Services.AddScoped<IPermissionService, PermissionService>();
-
-// 🔥 Authorization Handler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 #endregion
@@ -71,10 +67,9 @@ builder.Services.AddAuthentication(options =>
 });
 #endregion
 
-#region Authorization Policies (RBAC)
+#region Authorization Policies
 builder.Services.AddAuthorization(options =>
 {
-    // 🔥 Thêm permission dynamic sau này có thể seed
     var permissions = new[]
     {
         "CreateMedicalRecord",
@@ -92,7 +87,21 @@ builder.Services.AddAuthorization(options =>
 });
 #endregion
 
+#region CORS 🔥 (QUAN TRỌNG)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVue",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+#endregion
+
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -124,10 +133,16 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+
 #region Middleware
+
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
+
+// 🔥 CORS PHẢI ĐẶT TRƯỚC AUTH
+app.UseCors("AllowFrontend");
+app.UseCors("AllowVue");
 
 if (app.Environment.IsDevelopment())
 {
@@ -139,15 +154,15 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 #endregion
 
-#region Seed Roles + Admin + Permissions
+#region Seed Data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await SeedAdminUpdatePermissions.SeedAsync(services);
 }
-
 #endregion
 
 app.Run();

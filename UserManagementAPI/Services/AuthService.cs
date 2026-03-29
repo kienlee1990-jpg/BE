@@ -71,13 +71,24 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        // ❌ Sai tài khoản hoặc mật khẩu
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
             _logger.LogWarning("Login failed for {Email}", dto.Email);
-            throw new UnauthorizedAccessException("Invalid email or password");
+            throw new Exception("INVALID_CREDENTIALS");
         }
 
+        // 🚫 Tài khoản bị khóa
+        if (!user.IsActive)
+        {
+            _logger.LogWarning("Login blocked (inactive account): {Email}", user.Email);
+            throw new Exception("ACCOUNT_INACTIVE");
+        }
+
+        // ✅ Thành công
         _logger.LogInformation("User logged in: {Email}", user.Email);
+
         return await GenerateAuthResponse(user);
     }
 
