@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "wZ5Z9v6mWiA=",
+  "dgSpecHash": "+bp5UlunMPY=",
   "success": true,
-  "projectFilePath": "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\UserManagementAPI.csproj",
+  "projectFilePath": "D:\\Lê Trung Kiên\\Source code\\KPI Tracker API\\UserManagementAPI\\KPI Tracker API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\AD MIN\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\AD MIN\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

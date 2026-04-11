@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using KPI_Tracker_API.Interfaces;
+using KPI_Tracker_API.Services;
+using KPI_Tracker_API.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +14,8 @@ using UserManagementAPI.Entities;
 using UserManagementAPI.Interfaces;
 using UserManagementAPI.Middlewares;
 using UserManagementAPI.Services;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +44,14 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<IDanhMucChiTieuService, DanhMucChiTieuService>();
+builder.Services.AddScoped<IDotGiaoChiTieuService, DotGiaoChiTieuService>();
+builder.Services.AddScoped<IChiTietGiaoChiTieuService, ChiTietGiaoChiTieuService>();
+builder.Services.AddScoped<IDonViService, DonViService>();
+builder.Services.AddScoped<IKyBaoCaoKPIService, KyBaoCaoKPIService>();
+builder.Services.AddScoped<ITheoDoiThucHienKPIService, TheoDoiThucHienKPIService>();
+builder.Services.AddScoped<IDanhGiaKPIService, DanhGiaKPIService>();
+builder.Services.AddScoped<ICauHinhNguongDanhGiaKPIService, CauHinhNguongDanhGiaKPIService>();
 #endregion
 
 #region JWT Authentication

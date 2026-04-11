@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\UserManagementAPI.csproj": {}
+    "D:\\Lê Trung Kiên\\Source code\\KPI Tracker API\\UserManagementAPI\\UserManagementAPI.csproj": {}
   },
   "projects": {
-    "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\UserManagementAPI.csproj": {
+    "D:\\Lê Trung Kiên\\Source code\\KPI Tracker API\\UserManagementAPI\\UserManagementAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\UserManagementAPI.csproj",
+        "projectUniqueName": "D:\\Lê Trung Kiên\\Source code\\KPI Tracker API\\UserManagementAPI\\UserManagementAPI.csproj",
         "projectName": "UserManagementAPI",
-        "projectPath": "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\UserManagementAPI.csproj",
+        "projectPath": "D:\\Lê Trung Kiên\\Source code\\KPI Tracker API\\UserManagementAPI\\UserManagementAPI.csproj",
         "packagesPath": "C:\\Users\\AD MIN\\.nuget\\packages\\",
-        "outputPath": "D:\\Lê Trung Kiên\\Source code\\UserManagementAPI\\UserManagementAPI\\obj\\",
+        "outputPath": "D:\\Lê Trung Kiên\\Source code\\KPI Tracker API\\UserManagementAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

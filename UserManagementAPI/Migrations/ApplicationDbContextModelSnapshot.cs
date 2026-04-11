@@ -8,7 +8,7 @@ using UserManagementAPI.Data;
 
 #nullable disable
 
-namespace UserManagementAPI.Migrations
+namespace KPI_Tracker_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -21,6 +21,544 @@ namespace UserManagementAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.CauHinhNguongDanhGiaKPI", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DanhMucChiTieuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("DenTyLe")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Diem")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TuTyLe")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("XepLoai")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DanhMucChiTieuId");
+
+                    b.ToTable("CauHinhNguongDanhGiaKPI");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.ChiTietGiaoChiTieu", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ChiTietGiaoChaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("DanhMucChiTieuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("DonViNhanId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DonViThucHienChinhId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("DotGiaoChiTieuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("GiaTriMucTieu")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("GiaTriMucTieuText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TanSuatBaoCao")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int?>("ThuTuHienThi")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChiTietGiaoChaId");
+
+                    b.HasIndex("DanhMucChiTieuId");
+
+                    b.HasIndex("DonViNhanId");
+
+                    b.HasIndex("DonViThucHienChinhId");
+
+                    b.HasIndex("DotGiaoChiTieuId", "DanhMucChiTieuId", "DonViNhanId")
+                        .IsUnique();
+
+                    b.ToTable("ChiTietGiaoChiTieu");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DanhGiaKPI", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal?>("ChenhLechSoVoiCungKyNamTruoc")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ChenhLechSoVoiDauKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("ChiTietGiaoChiTieuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("GiaTriCungKyNamTruoc")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriCuoiKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriDauKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriMucTieu")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("KetQua")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<long>("KyBaoCaoKPIId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("NgayDanhGia")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiDanhGia")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NhanXetDanhGia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TyLeHoanThanh")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TyLeTangTruongSoVoiCungKyNamTruoc")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TyLeTangTruongSoVoiDauKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("XepLoai")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KyBaoCaoKPIId");
+
+                    b.HasIndex("ChiTietGiaoChiTieuId", "KyBaoCaoKPIId")
+                        .IsUnique();
+
+                    b.ToTable("DanhGiaKPI");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DanhMucChiTieu", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CapApDung")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ChieuSoSanh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("CoChoPhepPhanRa")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DieuKienHoanThanh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DieuKienKhongHoanThanh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DonViTinh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("HuongDanTinhToan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinhVucNghiepVu")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("LoaiChiTieu")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("LoaiMocSoSanh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MaChiTieu")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MoTa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("NgayHetHieuLuc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NgayHieuLuc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguonChiTieu")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenChiTieu")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TrangThaiSuDung")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("TyLePhanTramMucTieu")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaChiTieu")
+                        .IsUnique();
+
+                    b.ToTable("DanhMucChiTieus");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DonVi", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DiaChi")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long?>("DonViChaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LoaiDonVi")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("MaDonVi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiDaiDien")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SoDienThoai")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenDonVi")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DonViChaId");
+
+                    b.HasIndex("MaDonVi")
+                        .IsUnique();
+
+                    b.ToTable("DonVi");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DotGiaoChiTieu", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CapGiao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("DonViGiaoId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MaDotGiao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("NamApDung")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayGiao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguonDotGiao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenDotGiao")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaDotGiao")
+                        .IsUnique();
+
+                    b.ToTable("DotGiaoChiTieu");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.KyBaoCaoKPI", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("DenNgay")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LoaiKy")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("MaKy")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Nam")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayCuoiKy")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayDauKy")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("SoKy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenKy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("TuNgay")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaKy")
+                        .IsUnique();
+
+                    b.HasIndex("LoaiKy", "Nam", "SoKy");
+
+                    b.ToTable("KyBaoCaoKPI");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.TheoDoiThucHienKPI", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ChiTietGiaoChiTieuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("GiaTriCuoiKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriDauKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriLuyKe")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriThucHienTrongKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("KyBaoCaoKPIId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("NhanXet")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KyBaoCaoKPIId");
+
+                    b.HasIndex("ChiTietGiaoChiTieuId", "KyBaoCaoKPIId")
+                        .IsUnique();
+
+                    b.ToTable("TheoDoiThucHienKPI");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -330,6 +868,105 @@ namespace UserManagementAPI.Migrations
                     b.ToTable("UserPermissions");
                 });
 
+            modelBuilder.Entity("KPI_Tracker_API.Entities.CauHinhNguongDanhGiaKPI", b =>
+                {
+                    b.HasOne("KPI_Tracker_API.Entities.DanhMucChiTieu", "DanhMucChiTieu")
+                        .WithMany()
+                        .HasForeignKey("DanhMucChiTieuId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DanhMucChiTieu");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.ChiTietGiaoChiTieu", b =>
+                {
+                    b.HasOne("KPI_Tracker_API.Entities.ChiTietGiaoChiTieu", "ChiTietGiaoCha")
+                        .WithMany("ChiTietGiaoChiTieuCons")
+                        .HasForeignKey("ChiTietGiaoChaId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("KPI_Tracker_API.Entities.DanhMucChiTieu", "DanhMucChiTieu")
+                        .WithMany("ChiTietGiaoChiTieux")
+                        .HasForeignKey("DanhMucChiTieuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KPI_Tracker_API.Entities.DonVi", "DonViNhan")
+                        .WithMany()
+                        .HasForeignKey("DonViNhanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KPI_Tracker_API.Entities.DonVi", "DonViThucHienChinh")
+                        .WithMany()
+                        .HasForeignKey("DonViThucHienChinhId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("KPI_Tracker_API.Entities.DotGiaoChiTieu", "DotGiaoChiTieu")
+                        .WithMany("ChiTietGiaoChiTieux")
+                        .HasForeignKey("DotGiaoChiTieuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ChiTietGiaoCha");
+
+                    b.Navigation("DanhMucChiTieu");
+
+                    b.Navigation("DonViNhan");
+
+                    b.Navigation("DonViThucHienChinh");
+
+                    b.Navigation("DotGiaoChiTieu");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DanhGiaKPI", b =>
+                {
+                    b.HasOne("KPI_Tracker_API.Entities.ChiTietGiaoChiTieu", "ChiTietGiaoChiTieu")
+                        .WithMany()
+                        .HasForeignKey("ChiTietGiaoChiTieuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KPI_Tracker_API.Entities.KyBaoCaoKPI", "KyBaoCaoKPI")
+                        .WithMany("DanhGiaKPIs")
+                        .HasForeignKey("KyBaoCaoKPIId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ChiTietGiaoChiTieu");
+
+                    b.Navigation("KyBaoCaoKPI");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DonVi", b =>
+                {
+                    b.HasOne("KPI_Tracker_API.Entities.DonVi", "DonViCha")
+                        .WithMany()
+                        .HasForeignKey("DonViChaId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DonViCha");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.TheoDoiThucHienKPI", b =>
+                {
+                    b.HasOne("KPI_Tracker_API.Entities.ChiTietGiaoChiTieu", "ChiTietGiaoChiTieu")
+                        .WithMany()
+                        .HasForeignKey("ChiTietGiaoChiTieuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KPI_Tracker_API.Entities.KyBaoCaoKPI", "KyBaoCaoKPI")
+                        .WithMany("TheoDoiThucHienKPIs")
+                        .HasForeignKey("KyBaoCaoKPIId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ChiTietGiaoChiTieu");
+
+                    b.Navigation("KyBaoCaoKPI");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -428,6 +1065,28 @@ namespace UserManagementAPI.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.ChiTietGiaoChiTieu", b =>
+                {
+                    b.Navigation("ChiTietGiaoChiTieuCons");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DanhMucChiTieu", b =>
+                {
+                    b.Navigation("ChiTietGiaoChiTieux");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.DotGiaoChiTieu", b =>
+                {
+                    b.Navigation("ChiTietGiaoChiTieux");
+                });
+
+            modelBuilder.Entity("KPI_Tracker_API.Entities.KyBaoCaoKPI", b =>
+                {
+                    b.Navigation("DanhGiaKPIs");
+
+                    b.Navigation("TheoDoiThucHienKPIs");
                 });
 
             modelBuilder.Entity("UserManagementAPI.Entities.ApplicationUser", b =>
