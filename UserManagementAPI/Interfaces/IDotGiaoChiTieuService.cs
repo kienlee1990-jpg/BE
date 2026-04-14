@@ -1,4 +1,5 @@
-﻿using KPI_Tracker_API.DTOs.DotGiaoChiTieu;
+﻿using KPI_Tracker_API.DTOs;
+using KPI_Tracker_API.DTOs.DotGiaoChiTieu;
 
 namespace KPI_Tracker_API.Interfaces
 {

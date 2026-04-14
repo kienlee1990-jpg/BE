@@ -1,9 +1,10 @@
-﻿using UserManagementAPI.Data;
+﻿using KPI_Tracker_API.DTOs;
 using KPI_Tracker_API.DTOs.DotGiaoChiTieu;
 using KPI_Tracker_API.Entities;
 using KPI_Tracker_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
+using UserManagementAPI.Data;
 
 namespace KPI_Tracker_API.Services
 {
@@ -24,7 +25,7 @@ namespace KPI_Tracker_API.Services
             if (exists)
                 throw new Exception("Mã đợt giao đã tồn tại.");
 
-            ValidateBusinessRules(dto.NamApDung, dto.NguonDotGiao, dto.CapGiao);
+            ValidateBusinessRules(dto.NamApDung, dto.NguonDotGiao, dto.CapGiao, dto.NgayGiao, dto.NgayKetThuc);
 
             var entity = new DotGiaoChiTieu
             {
@@ -35,6 +36,7 @@ namespace KPI_Tracker_API.Services
                 CapGiao = dto.CapGiao.Trim(),
                 DonViGiaoId = dto.DonViGiaoId,
                 NgayGiao = dto.NgayGiao,
+                NgayKetThuc = dto.NgayKetThuc,
                 GhiChu = dto.GhiChu,
                 TrangThai = "DRAFT",
                 CreatedAt = DateTime.UtcNow
@@ -94,7 +96,7 @@ namespace KPI_Tracker_API.Services
             var entity = await _context.DotGiaoChiTieus.FindAsync(id);
             if (entity == null) return null;
 
-            ValidateBusinessRules(dto.NamApDung, dto.NguonDotGiao, dto.CapGiao);
+            ValidateBusinessRules(dto.NamApDung, dto.NguonDotGiao, dto.CapGiao, dto.NgayGiao, dto.NgayKetThuc);
 
             entity.TenDotGiao = dto.TenDotGiao.Trim();
             entity.NamApDung = dto.NamApDung;
@@ -102,6 +104,7 @@ namespace KPI_Tracker_API.Services
             entity.CapGiao = dto.CapGiao.Trim();
             entity.DonViGiaoId = dto.DonViGiaoId;
             entity.NgayGiao = dto.NgayGiao;
+            entity.NgayKetThuc = dto.NgayKetThuc;
             entity.TrangThai = dto.TrangThai.Trim();
             entity.GhiChu = dto.GhiChu;
             entity.UpdatedAt = DateTime.UtcNow;
@@ -139,13 +142,19 @@ namespace KPI_Tracker_API.Services
                 CapGiao = entity.CapGiao,
                 DonViGiaoId = entity.DonViGiaoId,
                 NgayGiao = entity.NgayGiao,
+                NgayKetThuc = entity.NgayKetThuc,
                 TrangThai = entity.TrangThai,
                 GhiChu = entity.GhiChu,
                 CreatedAt = entity.CreatedAt
             };
         }
 
-        private static void ValidateBusinessRules(int namApDung, string nguonDotGiao, string capGiao)
+        private static void ValidateBusinessRules(
+            int namApDung,
+            string nguonDotGiao,
+            string capGiao,
+            DateTime ngayGiao,
+            DateTime? ngayKetThuc)
         {
             if (namApDung < 2000 || namApDung > 2100)
                 throw new Exception("Năm áp dụng không hợp lệ.");
@@ -163,6 +172,9 @@ namespace KPI_Tracker_API.Services
 
             if (nguonDotGiao == "THANH_PHO_GIAO" && capGiao != "THANH_PHO")
                 throw new Exception("Nguồn Thành phố giao phải đi kèm cấp giao là THANH_PHO.");
+
+            if (ngayKetThuc.HasValue && ngayKetThuc.Value.Date < ngayGiao.Date)
+                throw new Exception("Ngày kết thúc phải lớn hơn hoặc bằng ngày giao.");
         }
     }
 }

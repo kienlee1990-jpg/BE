@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KPI_Tracker_API.DTOs;
 using KPI_Tracker_API.DTOs.DotGiaoChiTieu;
 using KPI_Tracker_API.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KPI_Tracker_API.Controllers
 {
@@ -48,7 +49,7 @@ namespace KPI_Tracker_API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(long id)
         {
             var result = await _service.GetByIdAsync(id);
             if (result == null)
@@ -58,7 +59,7 @@ namespace KPI_Tracker_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateDotGiaoChiTieuDto dto)
+        public async Task<IActionResult> Update(long id, [FromBody] UpdateDotGiaoChiTieuDto dto)
         {
             try
             {
@@ -75,7 +76,7 @@ namespace KPI_Tracker_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             try
             {

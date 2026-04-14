@@ -869,7 +869,7 @@
     "Parameters": [
       {
         "Name": "dto",
-        "Type": "KPI_Tracker_API.DTOs.DotGiaoChiTieu.CreateDotGiaoChiTieuDto",
+        "Type": "KPI_Tracker_API.DTOs.CreateDotGiaoChiTieuDto",
         "IsRequired": true
       }
     ],
@@ -921,7 +921,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Int32",
+        "Type": "System.Int64",
         "IsRequired": true
       }
     ],
@@ -937,12 +937,12 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Int32",
+        "Type": "System.Int64",
         "IsRequired": true
       },
       {
         "Name": "dto",
-        "Type": "KPI_Tracker_API.DTOs.DotGiaoChiTieu.UpdateDotGiaoChiTieuDto",
+        "Type": "KPI_Tracker_API.DTOs.UpdateDotGiaoChiTieuDto",
         "IsRequired": true
       }
     ],
@@ -958,7 +958,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Int32",
+        "Type": "System.Int64",
         "IsRequired": true
       }
     ],

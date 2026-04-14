@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace KPI_Tracker_API.DTOs.DotGiaoChiTieu
+namespace KPI_Tracker_API.DTOs
 {
     public class CreateDotGiaoChiTieuDto
     {
@@ -12,20 +12,24 @@ namespace KPI_Tracker_API.DTOs.DotGiaoChiTieu
         [MaxLength(255)]
         public string TenDotGiao { get; set; } = string.Empty;
 
-        [Required]
         public int NamApDung { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public string NguonDotGiao { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(50)]
         public string CapGiao { get; set; } = string.Empty;
 
-        [Required]
         public long DonViGiaoId { get; set; }
 
-        [Required]
         public DateTime NgayGiao { get; set; }
+
+        public DateTime? NgayKetThuc { get; set; }
+
+        [MaxLength(50)]
+        public string TrangThai { get; set; } = "DRAFT";
 
         public string? GhiChu { get; set; }
     }

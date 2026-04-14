@@ -31,6 +31,8 @@ namespace KPI_Tracker_API.Entities
 
         public DateTime NgayGiao { get; set; }
 
+        public DateTime? NgayKetThuc { get; set; } // thêm mới
+
         [MaxLength(50)]
         public string TrangThai { get; set; } = "DRAFT"; // DRAFT / PUBLISHED / CLOSED
 

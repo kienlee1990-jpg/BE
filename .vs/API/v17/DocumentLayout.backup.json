@@ -3,16 +3,36 @@
   "WorkspaceRootPath": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\services\\danhgiakpiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\services\\danhgiakpiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Migrations\\20260413215806_AddNgayKetThucToDotGiaoChiTieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:UserManagementAPI\\Migrations\\20260413215806_AddNgayKetThucToDotGiaoChiTieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\controllers\\danhgiakpicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\controllers\\danhgiakpicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\controllers\\dotgiaochitieucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\controllers\\dotgiaochitieucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\interfaces\\idanhgiakpiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\interfaces\\idanhgiakpiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\interfaces\\idotgiaochitieuservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\interfaces\\idotgiaochitieuservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\services\\dotgiaochitieuservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\services\\dotgiaochitieuservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\entities\\dotgiaochitieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\entities\\dotgiaochitieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\dtos\\dotgiaochitieu\\createdotgiaochitieudto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\dtos\\dotgiaochitieu\\createdotgiaochitieudto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\dtos\\dotgiaochitieu\\updatedotgiaochitieudto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\dtos\\dotgiaochitieu\\updatedotgiaochitieudto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|d:\\l\u00EA trung ki\u00EAn\\source code\\kpi tracker api\\usermanagementapi\\dtos\\dotgiaochitieu\\dotgiaochitieuresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5E24D6CA-FCD8-470A-A15A-B71106F57ED5}|UserManagementAPI\\KPI Tracker API.csproj|solutionrelative:usermanagementapi\\dtos\\dotgiaochitieu\\dotgiaochitieuresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,44 +42,111 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "DanhGiaKPIController.cs",
-              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Controllers\\DanhGiaKPIController.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Controllers\\DanhGiaKPIController.cs",
-              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Controllers\\DanhGiaKPIController.cs",
-              "RelativeToolTip": "UserManagementAPI\\Controllers\\DanhGiaKPIController.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAQwEYAAAB2AAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "20260413215806_AddNgayKetThucToDotGiaoChiTieu.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Migrations\\20260413215806_AddNgayKetThucToDotGiaoChiTieu.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Migrations\\20260413215806_AddNgayKetThucToDotGiaoChiTieu.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Migrations\\20260413215806_AddNgayKetThucToDotGiaoChiTieu.cs",
+              "RelativeToolTip": "UserManagementAPI\\Migrations\\20260413215806_AddNgayKetThucToDotGiaoChiTieu.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-11T03:33:34.069Z"
+              "WhenOpened": "2026-04-13T21:58:06.945Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "DanhGiaKPIService.cs",
-              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Services\\DanhGiaKPIService.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Services\\DanhGiaKPIService.cs",
-              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Services\\DanhGiaKPIService.cs",
-              "RelativeToolTip": "UserManagementAPI\\Services\\DanhGiaKPIService.cs",
-              "ViewState": "AgIAAH4AAAAAAAAAAAAswCMBAAABAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "DotGiaoChiTieuController.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Controllers\\DotGiaoChiTieuController.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Controllers\\DotGiaoChiTieuController.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Controllers\\DotGiaoChiTieuController.cs",
+              "RelativeToolTip": "UserManagementAPI\\Controllers\\DotGiaoChiTieuController.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAmwF4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-11T03:33:08.513Z",
+              "WhenOpened": "2026-04-13T21:55:05.424Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "IDanhGiaKPIService.cs",
-              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Interfaces\\IDanhGiaKPIService.cs",
-              "RelativeDocumentMoniker": "UserManagementAPI\\Interfaces\\IDanhGiaKPIService.cs",
-              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Interfaces\\IDanhGiaKPIService.cs",
-              "RelativeToolTip": "UserManagementAPI\\Interfaces\\IDanhGiaKPIService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
+              "Title": "IDotGiaoChiTieuService.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Interfaces\\IDotGiaoChiTieuService.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Interfaces\\IDotGiaoChiTieuService.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Interfaces\\IDotGiaoChiTieuService.cs",
+              "RelativeToolTip": "UserManagementAPI\\Interfaces\\IDotGiaoChiTieuService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-11T03:32:33.013Z"
+              "WhenOpened": "2026-04-13T21:54:21.234Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DotGiaoChiTieuResponseDto.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\DTOs\\DotGiaoChiTieu\\DotGiaoChiTieuResponseDto.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\DTOs\\DotGiaoChiTieu\\DotGiaoChiTieuResponseDto.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\DTOs\\DotGiaoChiTieu\\DotGiaoChiTieuResponseDto.cs",
+              "RelativeToolTip": "UserManagementAPI\\DTOs\\DotGiaoChiTieu\\DotGiaoChiTieuResponseDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-13T21:52:18.121Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "UpdateDotGiaoChiTieuDto.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\DTOs\\DotGiaoChiTieu\\UpdateDotGiaoChiTieuDto.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\DTOs\\DotGiaoChiTieu\\UpdateDotGiaoChiTieuDto.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\DTOs\\DotGiaoChiTieu\\UpdateDotGiaoChiTieuDto.cs",
+              "RelativeToolTip": "UserManagementAPI\\DTOs\\DotGiaoChiTieu\\UpdateDotGiaoChiTieuDto.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAmwCMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-13T21:52:01.51Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CreateDotGiaoChiTieuDto.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\DTOs\\DotGiaoChiTieu\\CreateDotGiaoChiTieuDto.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\DTOs\\DotGiaoChiTieu\\CreateDotGiaoChiTieuDto.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\DTOs\\DotGiaoChiTieu\\CreateDotGiaoChiTieuDto.cs",
+              "RelativeToolTip": "UserManagementAPI\\DTOs\\DotGiaoChiTieu\\CreateDotGiaoChiTieuDto.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAmwCMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-13T21:51:49.385Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DotGiaoChiTieu.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Entities\\DotGiaoChiTieu.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Entities\\DotGiaoChiTieu.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Entities\\DotGiaoChiTieu.cs",
+              "RelativeToolTip": "UserManagementAPI\\Entities\\DotGiaoChiTieu.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAiwC0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-13T21:49:11.101Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DotGiaoChiTieuService.cs",
+              "DocumentMoniker": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Services\\DotGiaoChiTieuService.cs",
+              "RelativeDocumentMoniker": "UserManagementAPI\\Services\\DotGiaoChiTieuService.cs",
+              "ToolTip": "D:\\L\u00EA Trung Ki\u00EAn\\Source code\\KPI Tracker API\\UserManagementAPI\\Services\\DotGiaoChiTieuService.cs",
+              "RelativeToolTip": "UserManagementAPI\\Services\\DotGiaoChiTieuService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAoAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-13T21:48:16.991Z",
+              "EditorCaption": ""
             }
           ]
         }
