@@ -25,6 +25,10 @@ namespace KPITrackerAPI.DTOs.ChiTietGiaoChiTieu
         public decimal? GiaTriMucTieu { get; set; }
         public string? GiaTriMucTieuText { get; set; }
         public decimal? GiaTriDauKyCoDinh { get; set; }
+        public string? TieuChiDanhGia { get; set; }
+        public string? LoaiMocSoSanh { get; set; }
+        public string? ChieuSoSanh { get; set; }
+        public string? QuyTacDanhGia { get; set; }
 
         public long? ChiTietGiaoChaId { get; set; }
 

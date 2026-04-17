@@ -1,5 +1,6 @@
 ﻿using KPITrackerAPI.Data;
 using KPITrackerAPI.DTOs.ChiTietGiaoChiTieu;
+using KPITrackerAPI.Constants;
 using KPITrackerAPI.Entities;
 using KPITrackerAPI.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -101,7 +102,16 @@ namespace KPITrackerAPI.Services
             var assignmentIds = childCriteria.Select(x => x.Id).Append(danhMuc.Id).ToList();
             await EnsureAssignmentNotExistsAsync(dto.DotGiaoChiTieuId, dto.DonViNhanId, assignmentIds);
 
-            ValidateGiaTriDauKyCoDinh(danhMuc.LoaiChiTieu, dto.GiaTriDauKyCoDinh, "chi tieu");
+            ValidateAssignmentMetricConfig(
+                dto.TieuChiDanhGia,
+                dto.LoaiMocSoSanh,
+                dto.ChieuSoSanh,
+                dto.QuyTacDanhGia,
+                dto.GiaTriMucTieu,
+                dto.GiaTriMucTieuText,
+                dto.GiaTriDauKyCoDinh,
+                danhMuc,
+                "chi tieu");
             ValidateChildAssignmentPayload(childCriteria, dto.TieuChiCon);
 
             var parent = BuildEntity(dto, danhMuc, tanSuatBaoCao);
@@ -150,7 +160,16 @@ namespace KPITrackerAPI.Services
             var assignmentIds = childCriteria.Select(x => x.Id).Append(danhMuc.Id).ToList();
             await EnsureAssignmentNotExistsAsync(dto.DotGiaoChiTieuId, dto.DonViNhanId, assignmentIds, excludeIds);
 
-            ValidateGiaTriDauKyCoDinh(danhMuc.LoaiChiTieu, dto.GiaTriDauKyCoDinh, "chi tieu");
+            ValidateAssignmentMetricConfig(
+                dto.TieuChiDanhGia,
+                dto.LoaiMocSoSanh,
+                dto.ChieuSoSanh,
+                dto.QuyTacDanhGia,
+                dto.GiaTriMucTieu,
+                dto.GiaTriMucTieuText,
+                dto.GiaTriDauKyCoDinh,
+                danhMuc,
+                "chi tieu");
             ValidateChildAssignmentPayload(childCriteria, dto.TieuChiCon);
 
             entity.DotGiaoChiTieuId = dto.DotGiaoChiTieuId;
@@ -159,7 +178,11 @@ namespace KPITrackerAPI.Services
             entity.DonViThucHienChinhId = dto.DonViThucHienChinhId;
             entity.GiaTriMucTieu = dto.GiaTriMucTieu;
             entity.GiaTriMucTieuText = NormalizeNullable(dto.GiaTriMucTieuText);
-            entity.GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(danhMuc.LoaiChiTieu, dto.GiaTriDauKyCoDinh);
+            entity.TieuChiDanhGia = ResolveTieuChiDanhGia(dto.TieuChiDanhGia, danhMuc);
+            entity.LoaiMocSoSanh = ResolveLoaiMocSoSanh(dto.TieuChiDanhGia, dto.LoaiMocSoSanh, danhMuc);
+            entity.ChieuSoSanh = ResolveChieuSoSanh(dto.TieuChiDanhGia, dto.ChieuSoSanh, danhMuc);
+            entity.QuyTacDanhGia = ResolveQuyTacDanhGia(entity.TieuChiDanhGia, dto.QuyTacDanhGia);
+            entity.GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(dto.TieuChiDanhGia, danhMuc, dto.GiaTriDauKyCoDinh);
             entity.ChiTietGiaoChaId = dto.ChiTietGiaoChaId;
             entity.GhiChu = NormalizeNullable(dto.GhiChu);
             entity.ThuTuHienThi = dto.ThuTuHienThi;
@@ -341,7 +364,16 @@ namespace KPITrackerAPI.Services
             foreach (var criterion in childCriteria)
             {
                 var payload = requestChildren.First(x => x.DanhMucChiTieuId == criterion.Id);
-                ValidateGiaTriDauKyCoDinh(criterion.LoaiChiTieu, payload.GiaTriDauKyCoDinh, $"tieu chi con '{criterion.TenChiTieu}'");
+                ValidateAssignmentMetricConfig(
+                    payload.TieuChiDanhGia,
+                    payload.LoaiMocSoSanh,
+                    payload.ChieuSoSanh,
+                    payload.QuyTacDanhGia,
+                    payload.GiaTriMucTieu,
+                    payload.GiaTriMucTieuText,
+                    payload.GiaTriDauKyCoDinh,
+                    criterion,
+                    $"tieu chi con '{criterion.TenChiTieu}'");
             }
         }
 
@@ -350,6 +382,8 @@ namespace KPITrackerAPI.Services
             DanhMucChiTieu danhMuc,
             string? tanSuatBaoCao)
         {
+            var tieuChiDanhGia = ResolveTieuChiDanhGia(dto.TieuChiDanhGia, danhMuc);
+            var quyTacDanhGia = ResolveQuyTacDanhGia(tieuChiDanhGia, dto.QuyTacDanhGia);
             return new ChiTietGiaoChiTieu
             {
                 DotGiaoChiTieuId = dto.DotGiaoChiTieuId,
@@ -358,7 +392,11 @@ namespace KPITrackerAPI.Services
                 DonViThucHienChinhId = dto.DonViThucHienChinhId,
                 GiaTriMucTieu = dto.GiaTriMucTieu,
                 GiaTriMucTieuText = NormalizeNullable(dto.GiaTriMucTieuText),
-                GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(danhMuc.LoaiChiTieu, dto.GiaTriDauKyCoDinh),
+                TieuChiDanhGia = tieuChiDanhGia,
+                LoaiMocSoSanh = ResolveLoaiMocSoSanh(tieuChiDanhGia, dto.LoaiMocSoSanh, danhMuc),
+                ChieuSoSanh = ResolveChieuSoSanh(tieuChiDanhGia, dto.ChieuSoSanh, danhMuc),
+                QuyTacDanhGia = quyTacDanhGia,
+                GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(tieuChiDanhGia, danhMuc, dto.GiaTriDauKyCoDinh),
                 ChiTietGiaoChaId = dto.ChiTietGiaoChaId,
                 GhiChu = NormalizeNullable(dto.GhiChu),
                 ThuTuHienThi = dto.ThuTuHienThi,
@@ -380,6 +418,8 @@ namespace KPITrackerAPI.Services
             return childCriteria.Select((criterion, index) =>
             {
                 var payload = payloadByCatalogId[criterion.Id];
+                var tieuChiDanhGia = ResolveTieuChiDanhGia(payload.TieuChiDanhGia, criterion);
+                var quyTacDanhGia = ResolveQuyTacDanhGia(tieuChiDanhGia, payload.QuyTacDanhGia);
                 return new ChiTietGiaoChiTieu
                 {
                     DotGiaoChiTieuId = dto.DotGiaoChiTieuId,
@@ -388,7 +428,11 @@ namespace KPITrackerAPI.Services
                     DonViThucHienChinhId = dto.DonViThucHienChinhId,
                     GiaTriMucTieu = payload.GiaTriMucTieu,
                     GiaTriMucTieuText = NormalizeNullable(payload.GiaTriMucTieuText),
-                    GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(criterion.LoaiChiTieu, payload.GiaTriDauKyCoDinh),
+                    TieuChiDanhGia = tieuChiDanhGia,
+                    LoaiMocSoSanh = ResolveLoaiMocSoSanh(tieuChiDanhGia, payload.LoaiMocSoSanh, criterion),
+                    ChieuSoSanh = ResolveChieuSoSanh(tieuChiDanhGia, payload.ChieuSoSanh, criterion),
+                    QuyTacDanhGia = quyTacDanhGia,
+                    GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(tieuChiDanhGia, criterion, payload.GiaTriDauKyCoDinh),
                     ChiTietGiaoChaId = parent.Id,
                     GhiChu = NormalizeNullable(payload.GhiChu),
                     ThuTuHienThi = payload.ThuTuHienThi ?? criterion.ThuTuHienThi ?? index + 1,
@@ -445,6 +489,8 @@ namespace KPITrackerAPI.Services
                 var recreatedChildren = childCriteria.Select((criterion, index) =>
                 {
                     var payload = payloadByCatalogId[criterion.Id];
+                    var tieuChiDanhGia = ResolveTieuChiDanhGia(payload.TieuChiDanhGia, criterion);
+                    var quyTacDanhGia = ResolveQuyTacDanhGia(tieuChiDanhGia, payload.QuyTacDanhGia);
                     return new ChiTietGiaoChiTieu
                     {
                         DotGiaoChiTieuId = dto.DotGiaoChiTieuId,
@@ -453,7 +499,11 @@ namespace KPITrackerAPI.Services
                         DonViThucHienChinhId = dto.DonViThucHienChinhId,
                         GiaTriMucTieu = payload.GiaTriMucTieu,
                         GiaTriMucTieuText = NormalizeNullable(payload.GiaTriMucTieuText),
-                        GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(criterion.LoaiChiTieu, payload.GiaTriDauKyCoDinh),
+                        TieuChiDanhGia = tieuChiDanhGia,
+                        LoaiMocSoSanh = ResolveLoaiMocSoSanh(tieuChiDanhGia, payload.LoaiMocSoSanh, criterion),
+                        ChieuSoSanh = ResolveChieuSoSanh(tieuChiDanhGia, payload.ChieuSoSanh, criterion),
+                        QuyTacDanhGia = quyTacDanhGia,
+                        GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(tieuChiDanhGia, criterion, payload.GiaTriDauKyCoDinh),
                         ChiTietGiaoChaId = parent.Id,
                         GhiChu = NormalizeNullable(payload.GhiChu),
                         ThuTuHienThi = payload.ThuTuHienThi ?? criterion.ThuTuHienThi ?? index + 1,
@@ -474,13 +524,19 @@ namespace KPITrackerAPI.Services
             {
                 var existingChild = existingChildrenByCatalogId[criterion.Id];
                 var payload = payloadByCatalogId[criterion.Id];
+                var tieuChiDanhGia = ResolveTieuChiDanhGia(payload.TieuChiDanhGia, criterion);
+                var quyTacDanhGia = ResolveQuyTacDanhGia(tieuChiDanhGia, payload.QuyTacDanhGia);
 
                 existingChild.DotGiaoChiTieuId = dto.DotGiaoChiTieuId;
                 existingChild.DonViNhanId = dto.DonViNhanId;
                 existingChild.DonViThucHienChinhId = dto.DonViThucHienChinhId;
                 existingChild.GiaTriMucTieu = payload.GiaTriMucTieu;
                 existingChild.GiaTriMucTieuText = NormalizeNullable(payload.GiaTriMucTieuText);
-                existingChild.GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(criterion.LoaiChiTieu, payload.GiaTriDauKyCoDinh);
+                existingChild.TieuChiDanhGia = tieuChiDanhGia;
+                existingChild.LoaiMocSoSanh = ResolveLoaiMocSoSanh(tieuChiDanhGia, payload.LoaiMocSoSanh, criterion);
+                existingChild.ChieuSoSanh = ResolveChieuSoSanh(tieuChiDanhGia, payload.ChieuSoSanh, criterion);
+                existingChild.QuyTacDanhGia = quyTacDanhGia;
+                existingChild.GiaTriDauKyCoDinh = ResolveGiaTriDauKyCoDinh(tieuChiDanhGia, criterion, payload.GiaTriDauKyCoDinh);
                 existingChild.GhiChu = NormalizeNullable(payload.GhiChu);
                 existingChild.ThuTuHienThi = payload.ThuTuHienThi ?? criterion.ThuTuHienThi ?? existingChild.ThuTuHienThi;
                 existingChild.TanSuatBaoCao = tanSuatBaoCao;
@@ -612,6 +668,10 @@ namespace KPITrackerAPI.Services
                 GiaTriMucTieu = x.GiaTriMucTieu,
                 GiaTriMucTieuText = x.GiaTriMucTieuText,
                 GiaTriDauKyCoDinh = x.GiaTriDauKyCoDinh,
+                TieuChiDanhGia = x.TieuChiDanhGia,
+                LoaiMocSoSanh = x.LoaiMocSoSanh,
+                ChieuSoSanh = x.ChieuSoSanh,
+                QuyTacDanhGia = x.QuyTacDanhGia,
                 ChiTietGiaoChaId = x.ChiTietGiaoChaId,
                 GhiChu = x.GhiChu,
                 ThuTuHienThi = x.ThuTuHienThi,
@@ -636,32 +696,156 @@ namespace KPITrackerAPI.Services
             return string.IsNullOrWhiteSpace(actor) ? "system" : actor.Trim();
         }
 
-        private static void ValidateGiaTriDauKyCoDinh(string? loaiChiTieu, decimal? giaTriDauKyCoDinh, string label)
+        private static void ValidateAssignmentMetricConfig(
+            string? requestedTieuChiDanhGia,
+            string? requestedLoaiMocSoSanh,
+            string? requestedChieuSoSanh,
+            string? requestedQuyTacDanhGia,
+            decimal? giaTriMucTieu,
+            string? giaTriMucTieuText,
+            decimal? giaTriDauKyCoDinh,
+            DanhMucChiTieu danhMuc,
+            string label)
         {
-            if (IsQualitative(loaiChiTieu))
+            var tieuChiDanhGia = ResolveTieuChiDanhGia(requestedTieuChiDanhGia, danhMuc);
+            var quyTacDanhGia = ResolveQuyTacDanhGia(tieuChiDanhGia, requestedQuyTacDanhGia);
+
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh)
             {
+                if (string.IsNullOrWhiteSpace(giaTriMucTieuText))
+                {
+                    throw new Exception($"Chi tieu {label} dang danh gia dinh tinh nen bat buoc khai bao mo ta muc tieu.");
+                }
+
                 return;
+            }
+
+            if (!giaTriMucTieu.HasValue || giaTriMucTieu.Value <= 0)
+            {
+                throw new Exception($"Gia tri muc tieu cua {label} phai lon hon 0.");
             }
 
             if (giaTriDauKyCoDinh.HasValue && giaTriDauKyCoDinh.Value < 0)
             {
                 throw new Exception($"Gia tri dau ky co dinh cua {label} khong duoc nho hon 0.");
             }
+
+            var chieuSoSanh = ResolveChieuSoSanh(tieuChiDanhGia, requestedChieuSoSanh, danhMuc);
+            if (string.IsNullOrWhiteSpace(chieuSoSanh))
+            {
+                throw new Exception($"Chi tieu {label} dang danh gia dinh luong nen bat buoc chon chieu danh gia.");
+            }
+
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhLuongSoSanh)
+            {
+                var loaiMocSoSanh = ResolveLoaiMocSoSanh(tieuChiDanhGia, requestedLoaiMocSoSanh, danhMuc);
+
+                if (string.IsNullOrWhiteSpace(loaiMocSoSanh))
+                {
+                    throw new Exception($"Chi tieu {label} dang danh gia dinh luong so sanh nen bat buoc chon moc so sanh.");
+                }
+            }
+
+            if (quyTacDanhGia == DanhGiaKPIConstants.QuyTacDanhGia.KhongVuotNguong &&
+                giaTriMucTieu.Value < 0)
+            {
+                throw new Exception($"Gia tri muc tieu cua {label} khong hop le voi quy tac khong vuot nguong.");
+            }
         }
 
-        private static decimal? ResolveGiaTriDauKyCoDinh(string? loaiChiTieu, decimal? giaTriDauKyCoDinh)
+        private static decimal? ResolveGiaTriDauKyCoDinh(
+            string? requestedTieuChiDanhGia,
+            DanhMucChiTieu danhMuc,
+            decimal? giaTriDauKyCoDinh)
         {
-            if (IsQualitative(loaiChiTieu))
+            return IsQualitativeCriterion(requestedTieuChiDanhGia, danhMuc)
+                ? null
+                : giaTriDauKyCoDinh ?? 0;
+        }
+
+        private static string ResolveTieuChiDanhGia(string? requestedTieuChiDanhGia, DanhMucChiTieu danhMuc)
+        {
+            var normalized = NormalizeCode(requestedTieuChiDanhGia) ?? NormalizeCode(danhMuc.LoaiChiTieu);
+            if (string.IsNullOrWhiteSpace(normalized) ||
+                !DanhGiaKPIConstants.AllowedTieuChiDanhGia.Contains(normalized))
+            {
+                throw new Exception($"Tieu chi danh gia cua chi tieu '{danhMuc.TenChiTieu}' khong hop le.");
+            }
+
+            return normalized;
+        }
+
+        private static string? ResolveLoaiMocSoSanh(
+            string? requestedTieuChiDanhGia,
+            string? requestedLoaiMocSoSanh,
+            DanhMucChiTieu danhMuc)
+        {
+            var tieuChiDanhGia = ResolveTieuChiDanhGia(requestedTieuChiDanhGia, danhMuc);
+            if (tieuChiDanhGia != DanhGiaKPIConstants.TieuChiDanhGia.DinhLuongSoSanh)
             {
                 return null;
             }
 
-            return giaTriDauKyCoDinh ?? 0;
+            var normalized = NormalizeCode(requestedLoaiMocSoSanh) ?? NormalizeCode(danhMuc.LoaiMocSoSanh);
+            if (string.IsNullOrWhiteSpace(normalized) ||
+                !DanhGiaKPIConstants.AllowedLoaiMocSoSanh.Contains(normalized))
+            {
+                throw new Exception($"Moc so sanh cua chi tieu '{danhMuc.TenChiTieu}' khong hop le.");
+            }
+
+            return normalized;
         }
 
-        private static bool IsQualitative(string? loaiChiTieu)
+        private static string? ResolveChieuSoSanh(
+            string? requestedTieuChiDanhGia,
+            string? requestedChieuSoSanh,
+            DanhMucChiTieu danhMuc)
         {
-            return string.Equals(loaiChiTieu?.Trim(), "DINH_TINH", StringComparison.OrdinalIgnoreCase);
+            var tieuChiDanhGia = ResolveTieuChiDanhGia(requestedTieuChiDanhGia, danhMuc);
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh)
+            {
+                return null;
+            }
+
+            var normalized = NormalizeCode(requestedChieuSoSanh) ?? NormalizeCode(danhMuc.ChieuSoSanh) ?? DanhGiaKPIConstants.ChieuSoSanh.Tang;
+            if (string.IsNullOrWhiteSpace(normalized) ||
+                !DanhGiaKPIConstants.AllowedChieuSoSanh.Contains(normalized))
+            {
+                throw new Exception($"Chieu so sanh cua chi tieu '{danhMuc.TenChiTieu}' khong hop le.");
+            }
+
+            return normalized;
+        }
+
+        private static string ResolveQuyTacDanhGia(
+            string? resolvedTieuChiDanhGia,
+            string? requestedQuyTacDanhGia)
+        {
+            var tieuChiDanhGia = DanhGiaKPIConstants.NormalizeCode(resolvedTieuChiDanhGia);
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh)
+            {
+                return DanhGiaKPIConstants.QuyTacDanhGia.MacDinh;
+            }
+
+            var normalized = NormalizeCode(requestedQuyTacDanhGia) ?? DanhGiaKPIConstants.QuyTacDanhGia.DatToiThieu;
+            if (normalized == DanhGiaKPIConstants.QuyTacDanhGia.MacDinh ||
+                !DanhGiaKPIConstants.AllowedQuyTacDanhGia.Contains(normalized))
+            {
+                throw new Exception("Quy tac danh gia khong hop le.");
+            }
+
+            return normalized;
+        }
+
+        private static bool IsQualitativeCriterion(string? requestedTieuChiDanhGia, DanhMucChiTieu danhMuc)
+        {
+            return ResolveTieuChiDanhGia(requestedTieuChiDanhGia, danhMuc) == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh;
+        }
+
+        private static string? NormalizeCode(string? value)
+        {
+            var normalized = DanhGiaKPIConstants.NormalizeCode(value);
+            return string.IsNullOrWhiteSpace(normalized) ? null : normalized;
         }
     }
 }

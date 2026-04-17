@@ -5,6 +5,8 @@ namespace KPITrackerAPI.Responses
         public long Id { get; set; }
         public long? DanhMucChiTieuId { get; set; }
         public string? TenChiTieu { get; set; }
+        public string? TieuChiDanhGia { get; set; }
+        public string? QuyTacDanhGia { get; set; }
         public decimal TuTyLe { get; set; }
         public decimal DenTyLe { get; set; }
         public string XepLoai { get; set; } = string.Empty;

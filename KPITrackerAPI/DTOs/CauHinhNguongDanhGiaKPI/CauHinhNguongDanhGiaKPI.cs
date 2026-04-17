@@ -3,6 +3,8 @@ namespace KPITrackerAPI.DTOs.CauHinhNguongDanhGiaKPI
     public class CreateCauHinhNguongDanhGiaKPIDto
     {
         public long? DanhMucChiTieuId { get; set; }
+        public string TieuChiDanhGia { get; set; } = string.Empty;
+        public string? QuyTacDanhGia { get; set; }
         public decimal TuTyLe { get; set; }
         public decimal DenTyLe { get; set; }
         public string XepLoai { get; set; } = string.Empty;
@@ -18,6 +20,8 @@ namespace KPITrackerAPI.DTOs.CauHinhNguongDanhGiaKPI
     public class CauHinhNguongDanhGiaKPIQueryDto
     {
         public long? DanhMucChiTieuId { get; set; }
+        public string? TieuChiDanhGia { get; set; }
+        public string? QuyTacDanhGia { get; set; }
         public string? Keyword { get; set; }
     }
 }

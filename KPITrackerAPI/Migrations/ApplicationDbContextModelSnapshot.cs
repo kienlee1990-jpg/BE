@@ -130,6 +130,14 @@ namespace KPITrackerAPI.Migrations
                     b.Property<string>("GhiChu")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TieuChiDanhGia")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("QuyTacDanhGia")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<decimal>("TuTyLe")
                         .HasColumnType("decimal(18,2)");
 
@@ -158,6 +166,10 @@ namespace KPITrackerAPI.Migrations
 
                     b.Property<long?>("ChiTietGiaoChaId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("ChieuSoSanh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -190,12 +202,24 @@ namespace KPITrackerAPI.Migrations
                     b.Property<string>("GiaTriMucTieuText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("LoaiMocSoSanh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("TanSuatBaoCao")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<int?>("ThuTuHienThi")
                         .HasColumnType("int");
+
+                    b.Property<string>("TieuChiDanhGia")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("QuyTacDanhGia")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()

@@ -27,6 +27,18 @@ namespace KPITrackerAPI.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal? GiaTriDauKyCoDinh { get; set; }
 
+        [MaxLength(50)]
+        public string? TieuChiDanhGia { get; set; }
+
+        [MaxLength(50)]
+        public string? LoaiMocSoSanh { get; set; }
+
+        [MaxLength(50)]
+        public string? ChieuSoSanh { get; set; }
+
+        [MaxLength(50)]
+        public string? QuyTacDanhGia { get; set; }
+
         public long? ChiTietGiaoChaId { get; set; }
 
         public string? GhiChu { get; set; }

@@ -12,9 +12,6 @@ using KPITrackerAPI.Authorization;
 using KPITrackerAPI.Data;
 using KPITrackerAPI.Entities;
 using KPITrackerAPI.Middlewares;
-
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 #region DbContext

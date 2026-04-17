@@ -11,6 +11,12 @@ namespace KPITrackerAPI.Entities
 
         public long? DanhMucChiTieuId { get; set; }
 
+        [MaxLength(50)]
+        public string? TieuChiDanhGia { get; set; }
+
+        [MaxLength(50)]
+        public string? QuyTacDanhGia { get; set; }
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal TuTyLe { get; set; }
 

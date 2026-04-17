@@ -140,6 +140,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(x => x.GiaTriDauKyCoDinh)
                   .HasColumnType("decimal(18,2)");
 
+            entity.Property(x => x.TieuChiDanhGia)
+                  .HasMaxLength(50);
+
+            entity.Property(x => x.LoaiMocSoSanh)
+                  .HasMaxLength(50);
+
+            entity.Property(x => x.ChieuSoSanh)
+                  .HasMaxLength(50);
+
+            entity.Property(x => x.QuyTacDanhGia)
+                  .HasMaxLength(50);
+
             entity.HasIndex(x => new
             {
                 x.DotGiaoChiTieuId,
@@ -260,6 +272,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(x => x.TuTyLe).HasColumnType("decimal(18,2)");
             entity.Property(x => x.DenTyLe).HasColumnType("decimal(18,2)");
             entity.Property(x => x.Diem).HasColumnType("decimal(18,2)");
+            entity.Property(x => x.TieuChiDanhGia)
+                  .HasMaxLength(50);
+            entity.Property(x => x.QuyTacDanhGia)
+                  .HasMaxLength(50);
             entity.Property(x => x.DieuKienThoiHan)
                   .HasMaxLength(30);
 

@@ -28,6 +28,18 @@ namespace KPITrackerAPI.Services
                 q = q.Where(x => x.DanhMucChiTieuId == query.DanhMucChiTieuId.Value);
             }
 
+            if (!string.IsNullOrWhiteSpace(query.TieuChiDanhGia))
+            {
+                var normalizedTieuChiDanhGia = DanhGiaKPIConstants.NormalizeCode(query.TieuChiDanhGia);
+                q = q.Where(x => x.TieuChiDanhGia == normalizedTieuChiDanhGia);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.QuyTacDanhGia))
+            {
+                var normalizedQuyTacDanhGia = DanhGiaKPIConstants.NormalizeCode(query.QuyTacDanhGia);
+                q = q.Where(x => x.QuyTacDanhGia == normalizedQuyTacDanhGia);
+            }
+
             if (!string.IsNullOrWhiteSpace(query.Keyword))
             {
                 var keyword = query.Keyword.Trim();
@@ -35,6 +47,7 @@ namespace KPITrackerAPI.Services
                 q = q.Where(x =>
                     x.XepLoai.Contains(keyword) ||
                     x.DieuKienThoiHan.Contains(keyword) ||
+                    (x.TieuChiDanhGia != null && x.TieuChiDanhGia.Contains(keyword)) ||
                     (x.DanhMucChiTieu != null &&
                      (x.DanhMucChiTieu.MaChiTieu.Contains(keyword) ||
                       x.DanhMucChiTieu.TenChiTieu.Contains(keyword))) ||
@@ -43,6 +56,8 @@ namespace KPITrackerAPI.Services
 
             return await q
                 .OrderBy(x => x.DanhMucChiTieuId.HasValue ? 0 : 1)
+                .ThenBy(x => x.TieuChiDanhGia)
+                .ThenBy(x => x.QuyTacDanhGia)
                 .ThenBy(x => x.DieuKienThoiHan)
                 .ThenBy(x => x.TuTyLe)
                 .Select(x => new CauHinhNguongDanhGiaKPIResponse
@@ -50,6 +65,8 @@ namespace KPITrackerAPI.Services
                     Id = x.Id,
                     DanhMucChiTieuId = x.DanhMucChiTieuId,
                     TenChiTieu = x.DanhMucChiTieu != null ? x.DanhMucChiTieu.TenChiTieu : null,
+                    TieuChiDanhGia = x.TieuChiDanhGia,
+                    QuyTacDanhGia = x.QuyTacDanhGia,
                     TuTyLe = x.TuTyLe,
                     DenTyLe = x.DenTyLe,
                     XepLoai = x.XepLoai,
@@ -70,6 +87,8 @@ namespace KPITrackerAPI.Services
                     Id = x.Id,
                     DanhMucChiTieuId = x.DanhMucChiTieuId,
                     TenChiTieu = x.DanhMucChiTieu != null ? x.DanhMucChiTieu.TenChiTieu : null,
+                    TieuChiDanhGia = x.TieuChiDanhGia,
+                    QuyTacDanhGia = x.QuyTacDanhGia,
                     TuTyLe = x.TuTyLe,
                     DenTyLe = x.DenTyLe,
                     XepLoai = x.XepLoai,
@@ -82,11 +101,13 @@ namespace KPITrackerAPI.Services
 
         public async Task<long> CreateAsync(CreateCauHinhNguongDanhGiaKPIDto dto, string? username)
         {
-            var normalizedXepLoai = await ValidateAndNormalizeAsync(dto);
+            var (normalizedXepLoai, normalizedTieuChiDanhGia, normalizedQuyTacDanhGia) = await ValidateAndNormalizeAsync(dto);
 
             var entity = new CauHinhNguongDanhGiaKPI
             {
                 DanhMucChiTieuId = dto.DanhMucChiTieuId,
+                TieuChiDanhGia = normalizedTieuChiDanhGia,
+                QuyTacDanhGia = normalizedQuyTacDanhGia,
                 TuTyLe = dto.TuTyLe,
                 DenTyLe = dto.DenTyLe,
                 XepLoai = normalizedXepLoai,
@@ -110,9 +131,11 @@ namespace KPITrackerAPI.Services
                 return false;
             }
 
-            var normalizedXepLoai = await ValidateAndNormalizeAsync(dto, id);
+            var (normalizedXepLoai, normalizedTieuChiDanhGia, normalizedQuyTacDanhGia) = await ValidateAndNormalizeAsync(dto, id);
 
             entity.DanhMucChiTieuId = dto.DanhMucChiTieuId;
+            entity.TieuChiDanhGia = normalizedTieuChiDanhGia;
+            entity.QuyTacDanhGia = normalizedQuyTacDanhGia;
             entity.TuTyLe = dto.TuTyLe;
             entity.DenTyLe = dto.DenTyLe;
             entity.XepLoai = normalizedXepLoai;
@@ -138,7 +161,7 @@ namespace KPITrackerAPI.Services
             return true;
         }
 
-        private async Task<string> ValidateAndNormalizeAsync(CreateCauHinhNguongDanhGiaKPIDto dto, long? currentId = null)
+        private async Task<(string xepLoai, string tieuChiDanhGia, string quyTacDanhGia)> ValidateAndNormalizeAsync(CreateCauHinhNguongDanhGiaKPIDto dto, long? currentId = null)
         {
             if (dto == null)
             {
@@ -147,6 +170,35 @@ namespace KPITrackerAPI.Services
 
             var normalizedXepLoai = DanhGiaKPIConstants.NormalizeCode(dto.XepLoai);
             var normalizedDieuKienThoiHan = DanhGiaKPIConstants.NormalizeCode(dto.DieuKienThoiHan);
+            var normalizedTieuChiDanhGia = DanhGiaKPIConstants.NormalizeCode(dto.TieuChiDanhGia);
+            var normalizedQuyTacDanhGia = DanhGiaKPIConstants.NormalizeCode(dto.QuyTacDanhGia);
+
+            if (string.IsNullOrWhiteSpace(normalizedTieuChiDanhGia))
+            {
+                throw new Exception("TieuChiDanhGia khong duoc de trong.");
+            }
+
+            if (!DanhGiaKPIConstants.AllowedTieuChiDanhGia.Contains(normalizedTieuChiDanhGia))
+            {
+                throw new Exception("TieuChiDanhGia khong hop le.");
+            }
+
+            if (normalizedTieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh)
+            {
+                normalizedQuyTacDanhGia = DanhGiaKPIConstants.QuyTacDanhGia.MacDinh;
+            }
+            else
+            {
+                normalizedQuyTacDanhGia = string.IsNullOrWhiteSpace(normalizedQuyTacDanhGia)
+                    ? DanhGiaKPIConstants.QuyTacDanhGia.DatToiThieu
+                    : normalizedQuyTacDanhGia;
+            }
+
+            if (string.IsNullOrWhiteSpace(normalizedQuyTacDanhGia) ||
+                !DanhGiaKPIConstants.AllowedQuyTacDanhGia.Contains(normalizedQuyTacDanhGia))
+            {
+                throw new Exception("QuyTacDanhGia khong hop le.");
+            }
 
             if (string.IsNullOrWhiteSpace(normalizedXepLoai))
             {
@@ -182,11 +234,19 @@ namespace KPITrackerAPI.Services
                 }
             }
 
-            ValidateBusinessRules(normalizedXepLoai, normalizedDieuKienThoiHan);
+            ValidateBusinessRules(
+                normalizedXepLoai,
+                normalizedDieuKienThoiHan,
+                normalizedTieuChiDanhGia,
+                normalizedQuyTacDanhGia,
+                dto.TuTyLe,
+                dto.DenTyLe);
 
             var isDuplicate = await _context.CauHinhNguongDanhGiaKPIs.AnyAsync(x =>
                 (!currentId.HasValue || x.Id != currentId.Value) &&
                 x.DanhMucChiTieuId == dto.DanhMucChiTieuId &&
+                x.TieuChiDanhGia == normalizedTieuChiDanhGia &&
+                x.QuyTacDanhGia == normalizedQuyTacDanhGia &&
                 x.TuTyLe == dto.TuTyLe &&
                 x.DenTyLe == dto.DenTyLe &&
                 x.XepLoai == normalizedXepLoai &&
@@ -200,6 +260,8 @@ namespace KPITrackerAPI.Services
             var hasOverlap = await _context.CauHinhNguongDanhGiaKPIs.AnyAsync(x =>
                 (!currentId.HasValue || x.Id != currentId.Value) &&
                 x.DanhMucChiTieuId == dto.DanhMucChiTieuId &&
+                x.TieuChiDanhGia == normalizedTieuChiDanhGia &&
+                x.QuyTacDanhGia == normalizedQuyTacDanhGia &&
                 x.DieuKienThoiHan == normalizedDieuKienThoiHan &&
                 x.TuTyLe <= dto.DenTyLe &&
                 x.DenTyLe >= dto.TuTyLe);
@@ -209,28 +271,61 @@ namespace KPITrackerAPI.Services
                 throw new Exception("Khoảng tỷ lệ đang bị chồng lấn với cấu hình ngưỡng khác cùng điều kiện thời hạn.");
             }
 
-            return normalizedXepLoai;
+            return (normalizedXepLoai, normalizedTieuChiDanhGia, normalizedQuyTacDanhGia);
         }
 
-        private static void ValidateBusinessRules(string xepLoai, string dieuKienThoiHan)
+        private static void ValidateBusinessRules(
+            string xepLoai,
+            string dieuKienThoiHan,
+            string tieuChiDanhGia,
+            string quyTacDanhGia,
+            decimal tuTyLe,
+            decimal denTyLe)
         {
             if (xepLoai == DanhGiaKPIConstants.XepLoai.KhongHoanThanh &&
                 dieuKienThoiHan != DanhGiaKPIConstants.DieuKienThoiHan.DaDenHan)
             {
-                throw new Exception("Trạng thái không hoàn thành chỉ áp dụng khi đã đến hạn.");
+                throw new Exception("Khong hoan thanh chi ap dung khi da den han.");
             }
 
             if (xepLoai == DanhGiaKPIConstants.XepLoai.ChuaHoanThanh &&
                 dieuKienThoiHan != DanhGiaKPIConstants.DieuKienThoiHan.ChuaDenHan)
             {
-                throw new Exception("Trạng thái chưa hoàn thành chỉ áp dụng khi chưa đến hạn.");
+                throw new Exception("Chua hoan thanh chi ap dung khi chua den han.");
             }
 
             if ((xepLoai == DanhGiaKPIConstants.XepLoai.HoanThanh ||
                  xepLoai == DanhGiaKPIConstants.XepLoai.HoanThanhVuotMuc) &&
                 dieuKienThoiHan != DanhGiaKPIConstants.DieuKienThoiHan.MacDinh)
             {
-                throw new Exception("Trạng thái hoàn thành chỉ sử dụng điều kiện thời hạn mặc định.");
+                throw new Exception("Hoan thanh va hoan thanh vuot muc chi dung voi dieu kien thoi han mac dinh.");
+            }
+
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh ||
+                quyTacDanhGia == DanhGiaKPIConstants.QuyTacDanhGia.KhongVuotNguong)
+            {
+                if (xepLoai == DanhGiaKPIConstants.XepLoai.HoanThanhVuotMuc)
+                {
+                    throw new Exception("Quy tac danh gia hien tai khong ap dung muc hoan thanh vuot muc.");
+                }
+            }
+
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh)
+            {
+                if (tuTyLe < 0 || denTyLe > 100)
+                {
+                    throw new Exception("Nguong danh gia cho chi tieu dinh tinh chi duoc nam trong khoang 0 den 100 phan tram.");
+                }
+
+                if (quyTacDanhGia != DanhGiaKPIConstants.QuyTacDanhGia.MacDinh)
+                {
+                    throw new Exception("Chi tieu dinh tinh chi su dung quy tac danh gia mac dinh.");
+                }
+            }
+
+            if (quyTacDanhGia == DanhGiaKPIConstants.QuyTacDanhGia.KhongVuotNguong && denTyLe > 100)
+            {
+                throw new Exception("Quy tac khong vuot nguong chi cho phep cau hinh den 100 phan tram.");
             }
         }
 
@@ -240,3 +335,4 @@ namespace KPITrackerAPI.Services
         }
     }
 }
+

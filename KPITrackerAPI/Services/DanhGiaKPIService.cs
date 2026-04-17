@@ -429,36 +429,45 @@ namespace KPITrackerAPI.Services
             TheoDoiThucHienKPI theoDoi,
             ComparisonContext comparisonContext)
         {
-            var loaiChiTieu = NormalizeKey(chiTiet.DanhMucChiTieu?.LoaiChiTieu);
+            var loaiChiTieu = GetEffectiveTieuChiDanhGia(chiTiet);
+            var quyTacDanhGia = GetEffectiveQuyTacDanhGia(chiTiet);
+            var chieuSoSanh = GetEffectiveChieuSoSanh(chiTiet);
 
             return loaiChiTieu switch
             {
-                "DINH_LUONG_TICH_LUY" => TinhTyLeHoanThanh(theoDoi.GiaTriLuyKe, chiTiet.GiaTriMucTieu),
-                "DINH_LUONG_SO_SANH" => TinhTyLeHoanThanhSoSanh(chiTiet.DanhMucChiTieu, theoDoi, comparisonContext),
-                "DINH_TINH" => TinhTyLeHoanThanhDinhTinh(chiTiet, theoDoi),
-                _ => TinhTyLeHoanThanh(theoDoi.GiaTriCuoiKy, chiTiet.GiaTriMucTieu)
+                DanhGiaKPIConstants.TieuChiDanhGia.DinhLuongTichLuy => TinhTyLeHoanThanhTichLuy(
+                    theoDoi.GiaTriLuyKe,
+                    chiTiet.GiaTriMucTieu,
+                    chieuSoSanh,
+                    quyTacDanhGia),
+                DanhGiaKPIConstants.TieuChiDanhGia.DinhLuongSoSanh => TinhTyLeHoanThanhSoSanh(
+                    chiTiet,
+                    theoDoi,
+                    comparisonContext,
+                    quyTacDanhGia),
+                DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh => TinhTyLeHoanThanhDinhTinh(theoDoi),
+                _ => TinhTyLeHoanThanhTichLuy(
+                    theoDoi.GiaTriCuoiKy,
+                    chiTiet.GiaTriMucTieu,
+                    chieuSoSanh,
+                    quyTacDanhGia)
             };
         }
 
-        private static decimal? TinhTyLeHoanThanhDinhTinh(ChiTietGiaoChiTieu chiTiet, TheoDoiThucHienKPI theoDoi)
+        private static decimal? TinhTyLeHoanThanhDinhTinh(TheoDoiThucHienKPI theoDoi)
         {
-            if (chiTiet.GiaTriMucTieu.HasValue && chiTiet.GiaTriMucTieu.Value > 0)
-            {
-                return TinhTyLeHoanThanh(theoDoi.GiaTriLuyKe, chiTiet.GiaTriMucTieu);
-            }
-
             if (string.IsNullOrWhiteSpace(theoDoi.NhanXet))
             {
                 return null;
             }
 
             var normalizedOption = NormalizeKey(theoDoi.NhanXet);
-            if (DinhTinhHoanThanhOptions.Contains(normalizedOption))
+            if (DanhGiaKPIConstants.DinhTinhHoanThanhOptions.Contains(normalizedOption))
             {
                 return 100m;
             }
 
-            if (DinhTinhKhongHoanThanhOptions.Contains(normalizedOption))
+            if (DanhGiaKPIConstants.DinhTinhKhongHoanThanhOptions.Contains(normalizedOption))
             {
                 return 0m;
             }
@@ -467,54 +476,156 @@ namespace KPITrackerAPI.Services
         }
 
         private static decimal? TinhTyLeHoanThanhSoSanh(
-            DanhMucChiTieu? danhMucChiTieu,
+            ChiTietGiaoChiTieu chiTiet,
             TheoDoiThucHienKPI theoDoi,
-            ComparisonContext comparisonContext)
+            ComparisonContext comparisonContext,
+            string? quyTacDanhGia)
         {
-            if (danhMucChiTieu?.TyLePhanTramMucTieu == null || danhMucChiTieu.TyLePhanTramMucTieu <= 0)
+            var mucTieuSoSanh = chiTiet.GiaTriMucTieu ?? chiTiet.DanhMucChiTieu?.TyLePhanTramMucTieu;
+            if (!mucTieuSoSanh.HasValue || mucTieuSoSanh <= 0)
             {
                 return null;
             }
 
-            var loaiMocSoSanh = NormalizeKey(danhMucChiTieu.LoaiMocSoSanh);
+            var loaiMocSoSanh = GetEffectiveLoaiMocSoSanh(chiTiet);
             var giaTriHienTai = loaiMocSoSanh switch
             {
-                "CUNG_KY" or "KY_TRUOC" or "TONG_NAM_TRUOC" => theoDoi.GiaTriLuyKe,
+                DanhGiaKPIConstants.LoaiMocSoSanh.CungKy or
+                DanhGiaKPIConstants.LoaiMocSoSanh.KyTruoc or
+                DanhGiaKPIConstants.LoaiMocSoSanh.TongNamTruoc => theoDoi.GiaTriLuyKe,
                 _ => theoDoi.GiaTriCuoiKy
             };
-            var giaTriMoc = NormalizeKey(danhMucChiTieu.LoaiMocSoSanh) switch
+            var giaTriMoc = loaiMocSoSanh switch
             {
-                "DAU_KY" => theoDoi.GiaTriDauKy,
-                "CUNG_KY" => comparisonContext.CungKyNamTruocGiaTriLuyKe ?? comparisonContext.CungKyNamTruocGiaTriCuoiKy,
-                "KY_TRUOC" => comparisonContext.KyTruocGiaTriLuyKe ?? comparisonContext.KyTruocGiaTriCuoiKy,
-                "TONG_NAM_TRUOC" => comparisonContext.TongNamTruocGiaTriLuyKe,
+                DanhGiaKPIConstants.LoaiMocSoSanh.DauKy => theoDoi.GiaTriDauKy,
+                DanhGiaKPIConstants.LoaiMocSoSanh.CungKy => comparisonContext.CungKyNamTruocGiaTriLuyKe ?? comparisonContext.CungKyNamTruocGiaTriCuoiKy,
+                DanhGiaKPIConstants.LoaiMocSoSanh.KyTruoc => comparisonContext.KyTruocGiaTriLuyKe ?? comparisonContext.KyTruocGiaTriCuoiKy,
+                DanhGiaKPIConstants.LoaiMocSoSanh.TongNamTruoc => comparisonContext.TongNamTruocGiaTriLuyKe,
                 _ => null
             };
 
-            var tyLeSoSanhThucTe = TinhTyLeSoSanhThucTe(
+            var tyLeSoSanhThucTe = TinhGiaTriSoSanhTheoHuong(
                 giaTriHienTai,
                 giaTriMoc,
-                NormalizeKey(danhMucChiTieu.ChieuSoSanh));
+                GetEffectiveChieuSoSanh(chiTiet) ?? string.Empty);
 
             if (!tyLeSoSanhThucTe.HasValue)
             {
                 return null;
             }
 
-            return Math.Max((tyLeSoSanhThucTe.Value / danhMucChiTieu.TyLePhanTramMucTieu.Value) * 100m, 0m);
+            return TinhTyLeHoanThanhTheoQuyTac(
+                tyLeSoSanhThucTe.Value,
+                mucTieuSoSanh.Value,
+                quyTacDanhGia);
         }
 
-        private static decimal? TinhTyLeSoSanhThucTe(decimal? giaTriHienTai, decimal? giaTriMoc, string chieuSoSanh)
+        private static decimal? TinhTyLeHoanThanhTichLuy(
+            decimal? giaTriThucTe,
+            decimal? giaTriMucTieu,
+            string? chieuSoSanh,
+            string? quyTacDanhGia)
+        {
+            if (!giaTriThucTe.HasValue || !giaTriMucTieu.HasValue || giaTriMucTieu.Value <= 0)
+            {
+                return null;
+            }
+
+            var giaTriThucTeDaChuanHoa = Math.Max(giaTriThucTe.Value, 0m);
+            var mucTieu = giaTriMucTieu.Value;
+            var normalizedQuyTac = NormalizeKey(quyTacDanhGia);
+            var normalizedChieu = NormalizeKey(chieuSoSanh);
+
+            if (normalizedQuyTac == DanhGiaKPIConstants.QuyTacDanhGia.KhongVuotNguong)
+            {
+                if (giaTriThucTeDaChuanHoa <= mucTieu)
+                {
+                    return 100m;
+                }
+
+                return (mucTieu / giaTriThucTeDaChuanHoa) * 100m;
+            }
+
+            if (normalizedChieu == DanhGiaKPIConstants.ChieuSoSanh.Giam)
+            {
+                if (giaTriThucTeDaChuanHoa <= mucTieu)
+                {
+                    return 100m + (((mucTieu - giaTriThucTeDaChuanHoa) / mucTieu) * 100m);
+                }
+
+                return (mucTieu / giaTriThucTeDaChuanHoa) * 100m;
+            }
+
+            return (giaTriThucTeDaChuanHoa / mucTieu) * 100m;
+        }
+
+        private static decimal? TinhGiaTriSoSanhTheoHuong(decimal? giaTriHienTai, decimal? giaTriMoc, string chieuSoSanh)
         {
             if (!giaTriHienTai.HasValue || !giaTriMoc.HasValue || giaTriMoc.Value == 0)
             {
                 return null;
             }
 
-            return chieuSoSanh switch
+            var tyLeThayDoi = chieuSoSanh switch
             {
-                "GIAM" => ((giaTriMoc.Value - giaTriHienTai.Value) / giaTriMoc.Value) * 100m,
+                DanhGiaKPIConstants.ChieuSoSanh.Giam => ((giaTriMoc.Value - giaTriHienTai.Value) / giaTriMoc.Value) * 100m,
                 _ => ((giaTriHienTai.Value - giaTriMoc.Value) / giaTriMoc.Value) * 100m
+            };
+
+            return Math.Max(tyLeThayDoi, 0m);
+        }
+
+        private static decimal? TinhTyLeHoanThanhTheoQuyTac(
+            decimal giaTriThucTe,
+            decimal giaTriMucTieu,
+            string? quyTacDanhGia)
+        {
+            if (giaTriMucTieu <= 0)
+            {
+                return null;
+            }
+
+            var normalizedQuyTac = NormalizeKey(quyTacDanhGia);
+            if (normalizedQuyTac == DanhGiaKPIConstants.QuyTacDanhGia.KhongVuotNguong)
+            {
+                if (giaTriThucTe <= giaTriMucTieu)
+                {
+                    return 100m;
+                }
+
+                return (giaTriMucTieu / giaTriThucTe) * 100m;
+            }
+
+            return (giaTriThucTe / giaTriMucTieu) * 100m;
+        }
+
+        private static string? GetEffectiveTieuChiDanhGia(ChiTietGiaoChiTieu chiTiet)
+        {
+            return NormalizeKey(chiTiet.TieuChiDanhGia ?? chiTiet.DanhMucChiTieu?.LoaiChiTieu);
+        }
+
+        private static string? GetEffectiveLoaiMocSoSanh(ChiTietGiaoChiTieu chiTiet)
+        {
+            return NormalizeKey(chiTiet.LoaiMocSoSanh ?? chiTiet.DanhMucChiTieu?.LoaiMocSoSanh);
+        }
+
+        private static string? GetEffectiveChieuSoSanh(ChiTietGiaoChiTieu chiTiet)
+        {
+            return NormalizeKey(chiTiet.ChieuSoSanh ?? chiTiet.DanhMucChiTieu?.ChieuSoSanh);
+        }
+
+        private static string? GetEffectiveQuyTacDanhGia(ChiTietGiaoChiTieu chiTiet)
+        {
+            var tieuChiDanhGia = GetEffectiveTieuChiDanhGia(chiTiet);
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh)
+            {
+                return DanhGiaKPIConstants.QuyTacDanhGia.MacDinh;
+            }
+
+            return NormalizeKey(chiTiet.QuyTacDanhGia) switch
+            {
+                DanhGiaKPIConstants.QuyTacDanhGia.KhongVuotNguong => DanhGiaKPIConstants.QuyTacDanhGia.KhongVuotNguong,
+                _ => DanhGiaKPIConstants.QuyTacDanhGia.DatToiThieu
             };
         }
 
@@ -583,16 +694,6 @@ namespace KPITrackerAPI.Services
             return ((giaTriSau.Value - giaTriTruoc.Value) / giaTriTruoc.Value) * 100m;
         }
 
-        private static decimal? TinhTyLeHoanThanh(decimal? giaTriThucHien, decimal? giaTriMucTieu)
-        {
-            if (!giaTriThucHien.HasValue || !giaTriMucTieu.HasValue || giaTriMucTieu.Value == 0)
-            {
-                return null;
-            }
-
-            return (giaTriThucHien.Value / giaTriMucTieu.Value) * 100m;
-        }
-
         private async Task<(string? xepLoai, string? ketQua)> XacDinhXepLoaiVaKetQuaAsync(
             ChiTietGiaoChiTieu chiTiet,
             KyBaoCaoKPI kyBaoCao,
@@ -606,6 +707,8 @@ namespace KPITrackerAPI.Services
             var dieuKienThoiHan = XacDinhDieuKienThoiHan(chiTiet, kyBaoCao, tyLeHoanThanh.Value);
             var cauHinh = await LoadNguongDanhGiaAsync(
                 chiTiet.DanhMucChiTieuId,
+                GetEffectiveTieuChiDanhGia(chiTiet),
+                GetEffectiveQuyTacDanhGia(chiTiet),
                 tyLeHoanThanh.Value,
                 dieuKienThoiHan);
 
@@ -675,34 +778,28 @@ namespace KPITrackerAPI.Services
                 .Replace(" ", "_");
         }
 
-        private static readonly HashSet<string> DinhTinhHoanThanhOptions = new()
-        {
-            "KHONG_XAY_RA",
-            "DAM_BAO",
-            "DAT_100"
-        };
-
-        private static readonly HashSet<string> DinhTinhKhongHoanThanhOptions = new()
-        {
-            "XAY_RA",
-            "KHONG_DAM_BAO",
-            "KHONG_DAT"
-        };
-
         private async Task<CauHinhNguongDanhGiaKPI?> LoadNguongDanhGiaAsync(
             long? danhMucChiTieuId,
+            string? tieuChiDanhGia,
+            string? quyTacDanhGia,
             decimal tyLeHoanThanh,
             string dieuKienThoiHan)
         {
+            var normalizedTieuChiDanhGia = NormalizeKey(tieuChiDanhGia);
+            var normalizedQuyTacDanhGia = NormalizeKey(quyTacDanhGia);
             var baseQuery = _context.CauHinhNguongDanhGiaKPIs
                 .Where(x =>
                     (x.DanhMucChiTieuId == danhMucChiTieuId || x.DanhMucChiTieuId == null) &&
+                    (x.TieuChiDanhGia == normalizedTieuChiDanhGia || x.TieuChiDanhGia == null) &&
+                    (x.QuyTacDanhGia == normalizedQuyTacDanhGia || x.QuyTacDanhGia == null) &&
                     x.TuTyLe <= tyLeHoanThanh &&
                     x.DenTyLe >= tyLeHoanThanh);
 
             var exactMatch = await baseQuery
                 .Where(x => x.DieuKienThoiHan == dieuKienThoiHan)
-                .OrderByDescending(x => x.DanhMucChiTieuId.HasValue)
+                .OrderByDescending(x => x.DanhMucChiTieuId == danhMucChiTieuId)
+                .ThenByDescending(x => x.TieuChiDanhGia == normalizedTieuChiDanhGia)
+                .ThenByDescending(x => x.QuyTacDanhGia == normalizedQuyTacDanhGia)
                 .ThenBy(x => x.TuTyLe)
                 .FirstOrDefaultAsync();
 
@@ -713,7 +810,9 @@ namespace KPITrackerAPI.Services
 
             return await baseQuery
                 .Where(x => x.DieuKienThoiHan == DanhGiaKPIConstants.DieuKienThoiHan.MacDinh)
-                .OrderByDescending(x => x.DanhMucChiTieuId.HasValue)
+                .OrderByDescending(x => x.DanhMucChiTieuId == danhMucChiTieuId)
+                .ThenByDescending(x => x.TieuChiDanhGia == normalizedTieuChiDanhGia)
+                .ThenByDescending(x => x.QuyTacDanhGia == normalizedQuyTacDanhGia)
                 .ThenBy(x => x.TuTyLe)
                 .FirstOrDefaultAsync();
         }

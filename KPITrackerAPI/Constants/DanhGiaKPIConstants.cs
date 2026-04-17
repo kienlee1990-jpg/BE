@@ -19,6 +19,34 @@ namespace KPITrackerAPI.Constants
             public const string DaDenHan = "DA_DEN_HAN";
         }
 
+        public static class TieuChiDanhGia
+        {
+            public const string DinhTinh = "DINH_TINH";
+            public const string DinhLuongTichLuy = "DINH_LUONG_TICH_LUY";
+            public const string DinhLuongSoSanh = "DINH_LUONG_SO_SANH";
+        }
+
+        public static class LoaiMocSoSanh
+        {
+            public const string DauKy = "DAU_KY";
+            public const string CungKy = "CUNG_KY";
+            public const string KyTruoc = "KY_TRUOC";
+            public const string TongNamTruoc = "TONG_NAM_TRUOC";
+        }
+
+        public static class ChieuSoSanh
+        {
+            public const string Tang = "TANG";
+            public const string Giam = "GIAM";
+        }
+
+        public static class QuyTacDanhGia
+        {
+            public const string MacDinh = "MAC_DINH";
+            public const string DatToiThieu = "DAT_TOI_THIEU";
+            public const string KhongVuotNguong = "KHONG_VUOT_NGUONG";
+        }
+
         public static IReadOnlyCollection<string> AllowedXepLoai { get; } = new[]
         {
             XepLoai.KhongHoanThanh,
@@ -32,6 +60,58 @@ namespace KPITrackerAPI.Constants
             DieuKienThoiHan.MacDinh,
             DieuKienThoiHan.ChuaDenHan,
             DieuKienThoiHan.DaDenHan
+        };
+
+        public static IReadOnlyCollection<string> AllowedTieuChiDanhGia { get; } = new[]
+        {
+            TieuChiDanhGia.DinhTinh,
+            TieuChiDanhGia.DinhLuongTichLuy,
+            TieuChiDanhGia.DinhLuongSoSanh
+        };
+
+        public static IReadOnlyCollection<string> AllowedLoaiMocSoSanh { get; } = new[]
+        {
+            LoaiMocSoSanh.DauKy,
+            LoaiMocSoSanh.CungKy,
+            LoaiMocSoSanh.KyTruoc,
+            LoaiMocSoSanh.TongNamTruoc
+        };
+
+        public static IReadOnlyCollection<string> AllowedChieuSoSanh { get; } = new[]
+        {
+            ChieuSoSanh.Tang,
+            ChieuSoSanh.Giam
+        };
+
+        public static IReadOnlyCollection<string> AllowedQuyTacDanhGia { get; } = new[]
+        {
+            QuyTacDanhGia.MacDinh,
+            QuyTacDanhGia.DatToiThieu,
+            QuyTacDanhGia.KhongVuotNguong
+        };
+
+        public static IReadOnlyCollection<string> DinhTinhHoanThanhOptions { get; } = new[]
+        {
+            "KHONG_XAY_RA",
+            "DAM_BAO",
+            "DAT_100"
+        };
+
+        public static IReadOnlyCollection<string> DinhTinhKhongHoanThanhOptions { get; } = new[]
+        {
+            "XAY_RA",
+            "KHONG_DAM_BAO",
+            "KHONG_DAT"
+        };
+
+        public static IReadOnlyCollection<string> AllowedDinhTinhOptions { get; } = new[]
+        {
+            "KHONG_XAY_RA",
+            "DAM_BAO",
+            "DAT_100",
+            "XAY_RA",
+            "KHONG_DAM_BAO",
+            "KHONG_DAT"
         };
 
         public static string GetDisplayLabel(string? xepLoai)
@@ -54,6 +134,16 @@ namespace KPITrackerAPI.Constants
             {
                 DieuKienThoiHan.ChuaDenHan => "Chưa đến hạn",
                 DieuKienThoiHan.DaDenHan => "Đã đến hạn",
+                _ => "Mặc định"
+            };
+        }
+
+        public static string GetQuyTacDanhGiaDisplayLabel(string? quyTacDanhGia)
+        {
+            return NormalizeCode(quyTacDanhGia) switch
+            {
+                QuyTacDanhGia.DatToiThieu => "Đạt tối thiểu",
+                QuyTacDanhGia.KhongVuotNguong => "Không vượt ngưỡng",
                 _ => "Mặc định"
             };
         }

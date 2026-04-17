@@ -1,3 +1,5 @@
+using KPITrackerAPI.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -5,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KPITrackerAPI.Migrations
 {
     /// <inheritdoc />
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20260415133000_AddDieuKienThoiHanToCauHinhNguongDanhGiaKPI")]
     public partial class AddDieuKienThoiHanToCauHinhNguongDanhGiaKPI : Migration
     {
         /// <inheritdoc />

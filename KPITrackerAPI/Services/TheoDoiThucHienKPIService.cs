@@ -1,3 +1,4 @@
+using KPITrackerAPI.Constants;
 using KPITrackerAPI.Data;
 using KPITrackerAPI.DTOs.TheoDoiThucHienKPI;
 using KPITrackerAPI.Entities;
@@ -250,10 +251,21 @@ namespace KPITrackerAPI.Services
                 throw new Exception("GiaTriThucHienTrongKy khong duoc nho hon 0.");
             }
 
-            var loaiChiTieu = (chiTiet.DanhMucChiTieu?.LoaiChiTieu ?? string.Empty).Trim().ToUpper();
-            if (loaiChiTieu == "DINH_TINH" && string.IsNullOrWhiteSpace(nhanXet))
+            var tieuChiDanhGia = DanhGiaKPIConstants.NormalizeCode(
+                chiTiet.TieuChiDanhGia ?? chiTiet.DanhMucChiTieu?.LoaiChiTieu);
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh &&
+                string.IsNullOrWhiteSpace(nhanXet))
             {
                 throw new Exception("Chi tieu dinh tinh bat buoc chon ket qua danh gia.");
+            }
+
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh)
+            {
+                var normalizedOption = DanhGiaKPIConstants.NormalizeCode(nhanXet);
+                if (!DanhGiaKPIConstants.AllowedDinhTinhOptions.Contains(normalizedOption))
+                {
+                    throw new Exception("Ket qua danh gia dinh tinh khong hop le.");
+                }
             }
         }
 
