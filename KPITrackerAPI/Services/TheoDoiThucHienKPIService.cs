@@ -104,6 +104,7 @@ namespace KPITrackerAPI.Services
                 dto.ChiTietGiaoChiTieuId,
                 dto.KyBaoCaoKPIId,
                 dto.GiaTriDauKy,
+                dto.GiaTriPhatSinhTrongKy,
                 dto.GiaTriThucHienTrongKy,
                 dto.NhanXet,
                 null);
@@ -113,9 +114,11 @@ namespace KPITrackerAPI.Services
                 ChiTietGiaoChiTieuId = dto.ChiTietGiaoChiTieuId,
                 KyBaoCaoKPIId = dto.KyBaoCaoKPIId,
                 GiaTriDauKy = await GetGiaTriDauKyCoDinhAsync(dto.ChiTietGiaoChiTieuId),
+                GiaTriPhatSinhTrongKy = dto.GiaTriPhatSinhTrongKy,
                 GiaTriThucHienTrongKy = dto.GiaTriThucHienTrongKy ?? 0,
                 GiaTriCuoiKy = 0,
                 GiaTriLuyKe = 0,
+                GiaTriPhatSinhLuyKe = 0,
                 NhanXet = dto.NhanXet?.Trim(),
                 TrangThai = "MOI_TAO",
                 CreatedAt = DateTime.UtcNow,
@@ -153,6 +156,7 @@ namespace KPITrackerAPI.Services
                 dto.ChiTietGiaoChiTieuId,
                 dto.KyBaoCaoKPIId,
                 dto.GiaTriDauKy,
+                dto.GiaTriPhatSinhTrongKy,
                 dto.GiaTriThucHienTrongKy,
                 dto.NhanXet,
                 id);
@@ -162,6 +166,7 @@ namespace KPITrackerAPI.Services
             entity.ChiTietGiaoChiTieuId = dto.ChiTietGiaoChiTieuId;
             entity.KyBaoCaoKPIId = dto.KyBaoCaoKPIId;
             entity.GiaTriDauKy = await GetGiaTriDauKyCoDinhAsync(dto.ChiTietGiaoChiTieuId);
+            entity.GiaTriPhatSinhTrongKy = dto.GiaTriPhatSinhTrongKy;
             entity.GiaTriThucHienTrongKy = dto.GiaTriThucHienTrongKy ?? 0;
             entity.NhanXet = dto.NhanXet?.Trim();
             entity.UpdatedAt = DateTime.UtcNow;
@@ -209,6 +214,7 @@ namespace KPITrackerAPI.Services
             long chiTietGiaoChiTieuId,
             long kyBaoCaoKPIId,
             decimal? giaTriDauKy,
+            decimal? giaTriPhatSinhTrongKy,
             decimal? giaTriThucHienTrongKy,
             string? nhanXet,
             long? currentId)
@@ -253,6 +259,8 @@ namespace KPITrackerAPI.Services
 
             var tieuChiDanhGia = DanhGiaKPIConstants.NormalizeCode(
                 chiTiet.TieuChiDanhGia ?? chiTiet.DanhMucChiTieu?.LoaiChiTieu);
+            var kieuSoSanh = DanhGiaKPIConstants.NormalizeCode(chiTiet.KieuSoSanh)
+                ?? DanhGiaKPIConstants.KieuSoSanh.ChenhLech;
             if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhTinh &&
                 string.IsNullOrWhiteSpace(nhanXet))
             {
@@ -265,6 +273,20 @@ namespace KPITrackerAPI.Services
                 if (!DanhGiaKPIConstants.AllowedDinhTinhOptions.Contains(normalizedOption))
                 {
                     throw new Exception("Ket qua danh gia dinh tinh khong hop le.");
+                }
+            }
+
+            if (tieuChiDanhGia == DanhGiaKPIConstants.TieuChiDanhGia.DinhLuongSoSanh &&
+                kieuSoSanh == DanhGiaKPIConstants.KieuSoSanh.TyLe)
+            {
+                if (!giaTriPhatSinhTrongKy.HasValue)
+                {
+                    throw new Exception("Chi tieu so sanh theo ty le bat buoc nhap GiaTriPhatSinhTrongKy.");
+                }
+
+                if (giaTriPhatSinhTrongKy.Value < 0)
+                {
+                    throw new Exception("GiaTriPhatSinhTrongKy khong duoc nho hon 0.");
                 }
             }
         }
@@ -290,15 +312,19 @@ namespace KPITrackerAPI.Services
                 .ToList();
 
             decimal luyKe = 0;
+            decimal phatSinhLuyKe = 0;
 
             foreach (var record in ordered)
             {
                 var giaTriThucHienTrongKy = record.GiaTriThucHienTrongKy ?? 0;
+                var giaTriPhatSinhTrongKy = record.GiaTriPhatSinhTrongKy ?? 0;
                 luyKe += giaTriThucHienTrongKy;
+                phatSinhLuyKe += giaTriPhatSinhTrongKy;
 
                 record.GiaTriDauKy = giaTriDauKyCoDinh;
                 record.GiaTriCuoiKy = giaTriDauKyCoDinh + luyKe;
                 record.GiaTriLuyKe = luyKe;
+                record.GiaTriPhatSinhLuyKe = phatSinhLuyKe;
             }
 
             await _context.SaveChangesAsync();
@@ -345,9 +371,11 @@ namespace KPITrackerAPI.Services
                 SoKy = x.KyBaoCaoKPI?.SoKy,
 
                 GiaTriDauKy = x.GiaTriDauKy,
+                GiaTriPhatSinhTrongKy = x.GiaTriPhatSinhTrongKy,
                 GiaTriThucHienTrongKy = x.GiaTriThucHienTrongKy,
                 GiaTriCuoiKy = x.GiaTriCuoiKy,
                 GiaTriLuyKe = x.GiaTriLuyKe,
+                GiaTriPhatSinhLuyKe = x.GiaTriPhatSinhLuyKe,
 
                 NhanXet = x.NhanXet,
                 TrangThai = x.TrangThai,

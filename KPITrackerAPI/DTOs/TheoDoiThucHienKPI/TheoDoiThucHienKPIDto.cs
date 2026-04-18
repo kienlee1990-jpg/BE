@@ -16,9 +16,11 @@ namespace KPITrackerAPI.DTOs.TheoDoiThucHienKPI
         public int? SoKy { get; set; }
 
         public decimal? GiaTriDauKy { get; set; }
+        public decimal? GiaTriPhatSinhTrongKy { get; set; }
         public decimal? GiaTriThucHienTrongKy { get; set; }
         public decimal? GiaTriCuoiKy { get; set; }
         public decimal? GiaTriLuyKe { get; set; }
+        public decimal? GiaTriPhatSinhLuyKe { get; set; }
 
         public string? NhanXet { get; set; }
         public string TrangThai { get; set; } = string.Empty;

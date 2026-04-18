@@ -27,6 +27,8 @@ namespace KPITrackerAPI.DTOs.ChiTietGiaoChiTieu
 
         public string? LoaiMocSoSanh { get; set; }
 
+        public string? KieuSoSanh { get; set; }
+
         public string? ChieuSoSanh { get; set; }
 
         public string? QuyTacDanhGia { get; set; }

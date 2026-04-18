@@ -22,10 +22,16 @@ namespace KPITrackerAPI.Entities
         public decimal? GiaTriThucHienTrongKy { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
+        public decimal? GiaTriPhatSinhTrongKy { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? GiaTriCuoiKy { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? GiaTriLuyKe { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? GiaTriPhatSinhLuyKe { get; set; }
 
         public string? NhanXet { get; set; }
 

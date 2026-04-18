@@ -34,6 +34,12 @@ namespace KPITrackerAPI.Constants
             public const string TongNamTruoc = "TONG_NAM_TRUOC";
         }
 
+        public static class KieuSoSanh
+        {
+            public const string ChenhLech = "CHENH_LECH";
+            public const string TyLe = "TY_LE";
+        }
+
         public static class ChieuSoSanh
         {
             public const string Tang = "TANG";
@@ -75,6 +81,12 @@ namespace KPITrackerAPI.Constants
             LoaiMocSoSanh.CungKy,
             LoaiMocSoSanh.KyTruoc,
             LoaiMocSoSanh.TongNamTruoc
+        };
+
+        public static IReadOnlyCollection<string> AllowedKieuSoSanh { get; } = new[]
+        {
+            KieuSoSanh.ChenhLech,
+            KieuSoSanh.TyLe
         };
 
         public static IReadOnlyCollection<string> AllowedChieuSoSanh { get; } = new[]
@@ -145,6 +157,15 @@ namespace KPITrackerAPI.Constants
                 QuyTacDanhGia.DatToiThieu => "Đạt tối thiểu",
                 QuyTacDanhGia.KhongVuotNguong => "Không vượt ngưỡng",
                 _ => "Mặc định"
+            };
+        }
+
+        public static string GetKieuSoSanhDisplayLabel(string? kieuSoSanh)
+        {
+            return NormalizeCode(kieuSoSanh) switch
+            {
+                KieuSoSanh.TyLe => "Tỷ lệ thực hiện",
+                _ => "Chênh lệch theo mốc"
             };
         }
 

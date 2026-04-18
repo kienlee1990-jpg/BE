@@ -34,6 +34,9 @@ namespace KPITrackerAPI.Entities
         public string? LoaiMocSoSanh { get; set; }
 
         [MaxLength(50)]
+        public string? KieuSoSanh { get; set; }
+
+        [MaxLength(50)]
         public string? ChieuSoSanh { get; set; }
 
         [MaxLength(50)]

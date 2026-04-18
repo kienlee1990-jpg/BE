@@ -487,6 +487,23 @@ namespace KPITrackerAPI.Services
                 return null;
             }
 
+            var kieuSoSanh = GetEffectiveKieuSoSanh(chiTiet);
+            if (kieuSoSanh == DanhGiaKPIConstants.KieuSoSanh.TyLe)
+            {
+                if (!theoDoi.GiaTriLuyKe.HasValue ||
+                    !theoDoi.GiaTriPhatSinhLuyKe.HasValue ||
+                    theoDoi.GiaTriPhatSinhLuyKe.Value <= 0)
+                {
+                    return null;
+                }
+
+                var tyLeThucTe = (theoDoi.GiaTriLuyKe.Value / theoDoi.GiaTriPhatSinhLuyKe.Value) * 100m;
+                return TinhTyLeHoanThanhTheoQuyTac(
+                    tyLeThucTe,
+                    mucTieuSoSanh.Value,
+                    quyTacDanhGia);
+            }
+
             var loaiMocSoSanh = GetEffectiveLoaiMocSoSanh(chiTiet);
             var giaTriHienTai = loaiMocSoSanh switch
             {
@@ -607,6 +624,17 @@ namespace KPITrackerAPI.Services
         private static string? GetEffectiveLoaiMocSoSanh(ChiTietGiaoChiTieu chiTiet)
         {
             return NormalizeKey(chiTiet.LoaiMocSoSanh ?? chiTiet.DanhMucChiTieu?.LoaiMocSoSanh);
+        }
+
+        private static string? GetEffectiveKieuSoSanh(ChiTietGiaoChiTieu chiTiet)
+        {
+            if (GetEffectiveTieuChiDanhGia(chiTiet) != DanhGiaKPIConstants.TieuChiDanhGia.DinhLuongSoSanh)
+            {
+                return null;
+            }
+
+            return NormalizeKey(chiTiet.KieuSoSanh)
+                ?? DanhGiaKPIConstants.KieuSoSanh.ChenhLech;
         }
 
         private static string? GetEffectiveChieuSoSanh(ChiTietGiaoChiTieu chiTiet)

@@ -199,6 +199,10 @@ namespace KPITrackerAPI.Migrations
                     b.Property<decimal?>("GiaTriMucTieu")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("KieuSoSanh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("GiaTriMucTieuText")
                         .HasColumnType("nvarchar(max)");
 
@@ -671,6 +675,12 @@ namespace KPITrackerAPI.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("GiaTriDauKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriPhatSinhTrongKy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GiaTriPhatSinhLuyKe")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("GiaTriLuyKe")

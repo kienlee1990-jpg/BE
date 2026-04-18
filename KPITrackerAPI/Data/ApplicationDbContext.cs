@@ -149,6 +149,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(x => x.LoaiMocSoSanh)
                   .HasMaxLength(50);
 
+            entity.Property(x => x.KieuSoSanh)
+                  .HasMaxLength(50);
+
             entity.Property(x => x.ChieuSoSanh)
                   .HasMaxLength(50);
 
@@ -268,9 +271,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<TheoDoiThucHienKPI>(entity =>
         {
             entity.Property(x => x.GiaTriDauKy).HasColumnType("decimal(18,2)");
+            entity.Property(x => x.GiaTriPhatSinhTrongKy).HasColumnType("decimal(18,2)");
             entity.Property(x => x.GiaTriThucHienTrongKy).HasColumnType("decimal(18,2)");
             entity.Property(x => x.GiaTriCuoiKy).HasColumnType("decimal(18,2)");
             entity.Property(x => x.GiaTriLuyKe).HasColumnType("decimal(18,2)");
+            entity.Property(x => x.GiaTriPhatSinhLuyKe).HasColumnType("decimal(18,2)");
 
             entity.HasIndex(x => new { x.ChiTietGiaoChiTieuId, x.KyBaoCaoKPIId })
                   .IsUnique();
