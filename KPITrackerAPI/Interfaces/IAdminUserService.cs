@@ -14,6 +14,8 @@ namespace KPITrackerAPI.Interfaces
         Task AssignPermissionToRoleAsync(string roleId, string permissionName);
         Task RemovePermissionFromRoleAsync(string roleId, string permissionName);
         // ROLE
+        Task<IEnumerable<object>> GetAllRolesAsync();
+        Task<object?> GetRoleByIdAsync(string roleId);
         Task CreateRoleAsync(string roleName);
         Task DeleteRoleAsync(string roleName);
 

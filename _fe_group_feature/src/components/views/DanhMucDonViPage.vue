@@ -178,7 +178,8 @@
                         </div>
 
                         <div v-else class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 custom-table">
+                            <ColumnVisibilityTools table-id="DanhMucDonViPage-table" />
+                            <table id="DanhMucDonViPage-table" class="table table-hover align-middle mb-0 custom-table managed-table">
                                 <thead>
                                     <tr>
                                         <th>Tên đơn vị</th>
@@ -314,6 +315,7 @@
     import { computed, onMounted, reactive, ref } from 'vue'
     import * as XLSX from 'xlsx'
     import BaseLayout from '../BaseLayout.vue'
+import ColumnVisibilityTools from '../shared/ColumnVisibilityTools.vue'
     import { apiRequest } from '../../services/api.js'
 
     const loading = ref(false)
@@ -1110,5 +1112,6 @@
         }
     }
 </style>
+
 
 

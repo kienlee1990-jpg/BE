@@ -187,7 +187,8 @@
                         </div>
 
                         <div v-else class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 custom-table">
+                            <ColumnVisibilityTools table-id="DanhMucChiTieuPage-table" />
+                            <table id="DanhMucChiTieuPage-table" class="table table-hover align-middle mb-0 custom-table managed-table">
                                 <thead>
                                     <tr>
                                         <th>Tên chỉ tiêu</th>
@@ -552,6 +553,7 @@
     import { computed, onMounted, reactive, ref, watch } from 'vue'
     import * as XLSX from 'xlsx'
     import BaseLayout from '../BaseLayout.vue'
+import ColumnVisibilityTools from '../shared/ColumnVisibilityTools.vue'
     import { apiRequest } from '../../services/api.js'
 
     const DEFAULT_CAP_AP_DUNG = 'THANH_PHO'
@@ -1696,4 +1698,5 @@
         color: #991b1b;
     }
 </style>
+
 

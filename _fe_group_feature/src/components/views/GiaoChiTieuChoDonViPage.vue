@@ -104,7 +104,8 @@
                         </div>
 
                         <div v-else class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 custom-table">
+                            <ColumnVisibilityTools table-id="GiaoChiTieuChoDonViPage-table" />
+                            <table id="GiaoChiTieuChoDonViPage-table" class="table table-hover align-middle mb-0 custom-table managed-table">
                                 <thead>
                                     <tr v-if="isCatpScope">
                                         <th>Đợt giao</th>
@@ -680,6 +681,7 @@
 <script setup>
     import { computed, onMounted, reactive, ref, watch } from 'vue'
     import BaseLayout from '../BaseLayout.vue'
+import ColumnVisibilityTools from '../shared/ColumnVisibilityTools.vue'
     import { apiRequest } from '../../services/api.js'
     import {
         CHIEU_SO_SANH_OPTIONS,
@@ -2003,5 +2005,6 @@
         }
     }
 </style>
+
 
 

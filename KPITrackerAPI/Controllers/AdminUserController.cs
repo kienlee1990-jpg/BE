@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using KPITrackerAPI.DTOs.Admin;
 using KPITrackerAPI.Interfaces;
@@ -72,6 +72,23 @@ namespace KPITrackerAPI.Controllers
         }
 
         // ==================== ROLE (CRUD) ====================
+        [HttpGet("roles")]
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var roles = await _adminUserService.GetAllRolesAsync();
+            return Ok(roles);
+        }
+
+        [HttpGet("roles/{roleId}")]
+        public async Task<IActionResult> GetRoleById(string roleId)
+        {
+            var role = await _adminUserService.GetRoleByIdAsync(roleId);
+            if (role == null)
+                return NotFound("Role not found");
+
+            return Ok(role);
+        }
+
         [HttpPost("roles")]
         public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
         {
@@ -115,7 +132,7 @@ namespace KPITrackerAPI.Controllers
 
         // ==================== PERMISSION (ROLE) ====================
 
-        /// G�n permission cho role
+        /// Gán permission cho role
         /// POST: api/admin/roles/{roleId}/permissions
         [HttpPost("roles/{roleId}/permissions")]
         public async Task<IActionResult> AssignPermissionToRole(string roleId, [FromBody] PermissionDto dto)
@@ -134,3 +151,4 @@ namespace KPITrackerAPI.Controllers
         }
     }
 }
+
