@@ -43,6 +43,7 @@ builder.Services.AddScoped<IDanhMucChiTieuService, DanhMucChiTieuService>();
 builder.Services.AddScoped<IDotGiaoChiTieuService, DotGiaoChiTieuService>();
 builder.Services.AddScoped<IChiTietGiaoChiTieuService, ChiTietGiaoChiTieuService>();
 builder.Services.AddScoped<IDonViService, DonViService>();
+builder.Services.AddScoped<INhomThiDuaService, NhomThiDuaService>();
 builder.Services.AddScoped<IKyBaoCaoKPIService, KyBaoCaoKPIService>();
 builder.Services.AddScoped<ITheoDoiThucHienKPIService, TheoDoiThucHienKPIService>();
 builder.Services.AddScoped<IDanhGiaKPIService, DanhGiaKPIService>();

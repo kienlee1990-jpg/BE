@@ -19,6 +19,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<DotGiaoChiTieu> DotGiaoChiTieus { get; set; }
     public DbSet<ChiTietGiaoChiTieu> ChiTietGiaoChiTieus { get; set; }
     public DbSet<DonVi> DonVis { get; set; }
+    public DbSet<NhomThiDua> NhomThiDuas { get; set; }
+    public DbSet<NhomThiDuaDonVi> NhomThiDuaDonVis { get; set; }
+    public DbSet<NhomThiDuaChiTieu> NhomThiDuaChiTieus { get; set; }
     public DbSet<KyBaoCaoKPI> KyBaoCaoKPIs { get; set; }
     public DbSet<TheoDoiThucHienKPI> TheoDoiThucHienKPIs { get; set; }
     public DbSet<DanhGiaKPI> DanhGiaKPIs { get; set; }
@@ -196,6 +199,54 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(x => x.DonViCha)
                   .WithMany()
                   .HasForeignKey(x => x.DonViChaId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // =====================================================
+        // NhomThiDua
+        // =====================================================
+        builder.Entity<NhomThiDua>(entity =>
+        {
+            entity.HasIndex(x => x.MaNhom)
+                  .IsUnique();
+
+            entity.HasIndex(x => x.TenNhom)
+                  .IsUnique();
+        });
+
+        // =====================================================
+        // NhomThiDuaDonVi
+        // =====================================================
+        builder.Entity<NhomThiDuaDonVi>(entity =>
+        {
+            entity.HasKey(x => new { x.NhomThiDuaId, x.DonViId });
+
+            entity.HasOne(x => x.NhomThiDua)
+                  .WithMany(x => x.NhomThiDuaDonVis)
+                  .HasForeignKey(x => x.NhomThiDuaId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.DonVi)
+                  .WithMany()
+                  .HasForeignKey(x => x.DonViId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // =====================================================
+        // NhomThiDuaChiTieu
+        // =====================================================
+        builder.Entity<NhomThiDuaChiTieu>(entity =>
+        {
+            entity.HasKey(x => new { x.NhomThiDuaId, x.DanhMucChiTieuId });
+
+            entity.HasOne(x => x.NhomThiDua)
+                  .WithMany(x => x.NhomThiDuaChiTieus)
+                  .HasForeignKey(x => x.NhomThiDuaId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.DanhMucChiTieu)
+                  .WithMany()
+                  .HasForeignKey(x => x.DanhMucChiTieuId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
 
