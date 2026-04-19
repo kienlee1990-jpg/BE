@@ -1,6 +1,7 @@
 # Build folders
 bin/
 obj/
+_build_check/
 
 # Visual Studio
 .vs/
@@ -12,6 +13,9 @@ TestResults/
 
 # Logs
 *.log
+
+# Local app settings
+**/appsettings.Development.json
 
 # Rider (nếu có)
 .idea/
