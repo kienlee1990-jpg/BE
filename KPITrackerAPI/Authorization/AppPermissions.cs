@@ -13,6 +13,7 @@ public static class AppPermissions
     public const string AssignTargetsToCatp = "AssignTargetsToCatp";
     public const string AssignTargetsToPhong = "AssignTargetsToPhong";
     public const string AssignTargetsToCadp = "AssignTargetsToCadp";
+    public const string ViewAssignedTargetsList = "ViewAssignedTargetsList";
 
     public const string SubmitPeriodicReports = "SubmitPeriodicReports";
     public const string ViewExecutionProgress = "ViewExecutionProgress";
@@ -34,6 +35,7 @@ public static class AppPermissions
     public const string ManageUsers = "ManageUsers";
     public const string ManagePermissions = "ManagePermissions";
     public const string ViewSystemLogs = "ViewSystemLogs";
+    public const string ResetUserPasswords = "ResetUserPasswords";
 
     public static readonly string[] All =
     {
@@ -46,6 +48,7 @@ public static class AppPermissions
         AssignTargetsToCatp,
         AssignTargetsToPhong,
         AssignTargetsToCadp,
+        ViewAssignedTargetsList,
         SubmitPeriodicReports,
         ViewExecutionProgress,
         ViewUnitsPendingUpdate,
@@ -62,6 +65,7 @@ public static class AppPermissions
         ExportReports,
         ManageUsers,
         ManagePermissions,
-        ViewSystemLogs
+        ViewSystemLogs,
+        ResetUserPasswords
     };
 }

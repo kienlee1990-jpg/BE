@@ -109,6 +109,16 @@ namespace KPITrackerAPI.Controllers
             return NoContent();
         }
 
+        [HttpDelete("roles/by-id/{roleId}")]
+        public async Task<IActionResult> DeleteRoleById(string roleId)
+        {
+            if (string.IsNullOrWhiteSpace(roleId))
+                return BadRequest("RoleId is required");
+
+            await _adminUserService.DeleteRoleByIdAsync(roleId);
+            return NoContent();
+        }
+
         // ==================== PERMISSION (CRUD) ====================
         [HttpPost("permissions")]
         public async Task<IActionResult> CreatePermission([FromBody] PermissionDto dto)

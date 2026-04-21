@@ -322,7 +322,7 @@ namespace KPITrackerAPI.Services
                 phatSinhLuyKe += giaTriPhatSinhTrongKy;
 
                 record.GiaTriDauKy = giaTriDauKyCoDinh;
-                record.GiaTriCuoiKy = giaTriDauKyCoDinh + luyKe;
+                record.GiaTriCuoiKy = CalculateGiaTriCuoiKy(giaTriDauKyCoDinh, luyKe);
                 record.GiaTriLuyKe = luyKe;
                 record.GiaTriPhatSinhLuyKe = phatSinhLuyKe;
             }
@@ -339,6 +339,13 @@ namespace KPITrackerAPI.Services
                 .FirstOrDefaultAsync();
 
             return giaTri ?? 0;
+        }
+
+        private static decimal CalculateGiaTriCuoiKy(
+            decimal giaTriDauKyCoDinh,
+            decimal giaTriLuyKe)
+        {
+            return giaTriDauKyCoDinh + giaTriLuyKe;
         }
 
         private static int ThuTuLoaiKy(string? loaiKy)

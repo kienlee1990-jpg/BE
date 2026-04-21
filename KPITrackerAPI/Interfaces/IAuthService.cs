@@ -8,9 +8,9 @@ public interface IAuthService
 {
     Task<AuthResponseDto> RegisterAsync(RegisterDto dto);
     Task<AuthResponseDto> LoginAsync(LoginDto dto);
-    Task RequestPasswordResetAsync(RequestPasswordResetDto dto);
+    Task<(string Email, string Token)> RequestPasswordResetAsync(RequestPasswordResetDto dto);
     Task ResetPasswordAsync(ResetPasswordDto dto);
     Task<AuthResponseDto> RefreshTokenAsync(string refreshToken);
     Task LogoutAsync(ClaimsPrincipal user, string refreshToken);
-    Task<(string UserId, string Email, string FullName, List<string> Roles, List<string> Permissions)> GetCurrentUserAsync(string userId);
+    Task<(string UserId, string UserName, string Email, string FullName, long? DonViId, string? DonVi, string? MaDonVi, List<string> Roles, List<string> Permissions, List<string> RolePermissions)> GetCurrentUserAsync(string userId);
 }

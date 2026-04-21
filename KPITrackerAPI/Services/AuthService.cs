@@ -1,4 +1,4 @@
-using KPITrackerAPI.Data;
+﻿using KPITrackerAPI.Data;
 using KPITrackerAPI.DTOs;
 using KPITrackerAPI.DTOs.Auth;
 using KPITrackerAPI.Entities;
@@ -46,11 +46,20 @@ public class AuthService : IAuthService
     // ================= REGISTER =================
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
+        DonVi? donVi = null;
+        if (dto.DonViId.HasValue)
+        {
+            donVi = await _context.DonVis.FirstOrDefaultAsync(x => x.Id == dto.DonViId.Value);
+            if (donVi == null)
+                throw new ApplicationException("Đơn vị không tồn tại.");
+        }
+
         var user = new ApplicationUser
         {
             Email = dto.Email,
             UserName = dto.UserName,
             FullName = dto.FullName,
+            DonViId = donVi?.Id,
             PhoneNumber = dto.PhoneNumber,
             Address = dto.Address,
             CreatedAt = DateTime.UtcNow
@@ -72,21 +81,21 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
-        // ? Sai t�i kho?n ho?c m?t kh?u
+        // ? Sai tài kho?n ho?c m?t kh?u
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
             _logger.LogWarning("Login failed for {Email}", dto.Email);
             throw new Exception("INVALID_CREDENTIALS");
         }
 
-        // ?? T�i kho?n b? kh�a
+        // ?? Tài kho?n b? khóa
         if (!user.IsActive)
         {
             _logger.LogWarning("Login blocked (inactive account): {Email}", user.Email);
             throw new Exception("ACCOUNT_INACTIVE");
         }
 
-        // ? Th�nh c�ng
+        // ? Thành công
         _logger.LogInformation("User logged in: {Email}", user.Email);
 
         return await GenerateAuthResponse(user);
@@ -195,10 +204,11 @@ public class AuthService : IAuthService
     }
 
     // ================= FORGOT / RESET PASSWORD =================
-    public async Task RequestPasswordResetAsync(RequestPasswordResetDto dto)
+    public async Task<(string Email, string Token)> RequestPasswordResetAsync(RequestPasswordResetDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
-        if (user == null) return;
+        if (user == null)
+            throw new ApplicationException("Email không tồn tại.");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var encodedToken = Uri.EscapeDataString(token);
@@ -207,6 +217,7 @@ public class AuthService : IAuthService
         _logger.LogInformation("Password reset requested for {Email}", dto.Email);
         // TODO: inject EmailService d? g?i mail
         Console.WriteLine(resetLink);
+        return (dto.Email, encodedToken);
     }
 
     public async Task ResetPasswordAsync(ResetPasswordDto dto)
@@ -225,28 +236,28 @@ public class AuthService : IAuthService
     }
 
     // ================= GET ME =================
-    public async Task<(string UserId, string Email, string FullName, List<string> Roles, List<string> Permissions)> GetCurrentUserAsync(string userId)
+    public async Task<(string UserId, string UserName, string Email, string FullName, long? DonViId, string? DonVi, string? MaDonVi, List<string> Roles, List<string> Permissions, List<string> RolePermissions)> GetCurrentUserAsync(string userId)
     {
         var user = await _context.Users
             .AsNoTracking()
+            .Include(u => u.DonVi)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
-            return (null!, null!, null!, new List<string>(), new List<string>());
+            return (null!, null!, null!, null!, null, null, null, new List<string>(), new List<string>(), new List<string>());
 
         // L?y role
         var roles = (await _userManager.GetRolesAsync(user)).ToList();
 
-        // L?y permission ch? IsGranted = true
-        var permissions = await _context.UserPermissions
-            .Where(up => up.UserId == userId && up.IsGranted)
-            .Join(_context.Permissions,
-                  up => up.PermissionId,
-                  p => p.Id,
-                  (up, p) => p.Name)
+        var rolePermissions = await _context.RolePermissions
+            .Where(rp => rp.Role != null && rp.Permission != null && roles.Contains(rp.Role.Name))
+            .Select(rp => rp.Permission.Name)
             .Distinct()
             .ToListAsync();
 
-        return (user.Id, user.Email, user.FullName, roles, permissions);
+        var permissions = await _permissionService.GetPermissionsAsync(user);
+
+        return (user.Id, user.UserName ?? string.Empty, user.Email ?? string.Empty, user.FullName, user.DonViId, user.DonVi?.TenDonVi, user.DonVi?.MaDonVi, roles, permissions, rolePermissions);
     }
 }
+

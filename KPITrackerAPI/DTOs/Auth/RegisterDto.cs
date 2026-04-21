@@ -2,6 +2,7 @@ namespace KPITrackerAPI.DTOs;
 
 public class RegisterDto
 {
+    public long? DonViId { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
     public string UserName { get; set; }

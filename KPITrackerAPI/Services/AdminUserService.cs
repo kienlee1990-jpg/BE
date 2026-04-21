@@ -13,21 +13,25 @@ namespace KPITrackerAPI.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly IPermissionService _permissionService;
 
         public AdminUserService(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IPermissionService permissionService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _permissionService = permissionService;
         }
 
         // ================= USER =================
         public async Task<IEnumerable<object>> GetAllUsersAsync()
         {
             var users = await _userManager.Users
+                .Include(u => u.DonVi)
                 .Include(u => u.UserPermissions)
                 .ThenInclude(up => up.Permission)
                 .ToListAsync();
@@ -37,6 +41,18 @@ namespace KPITrackerAPI.Services
             foreach (var u in users)
             {
                 var roles = await _userManager.GetRolesAsync(u);
+                var rolePermissions = await _context.RolePermissions
+                    .Where(rolePermission => rolePermission.Role != null
+                        && rolePermission.Permission != null
+                        && roles.Contains(rolePermission.Role.Name))
+                    .Select(rolePermission => rolePermission.Permission.Name)
+                    .Distinct()
+                    .ToListAsync();
+                var directPermissions = u.UserPermissions
+                    .Where(up => up.IsGranted)
+                    .Select(up => up.Permission.Name)
+                    .ToList();
+                var effectivePermissions = await _permissionService.GetPermissionsAsync(u);
 
                 resultList.Add(new
                 {
@@ -44,14 +60,16 @@ namespace KPITrackerAPI.Services
                     u.UserName,
                     u.Email,
                     u.FullName,
+                    DonViId = u.DonViId,
+                    MaDonVi = u.DonVi?.MaDonVi,
+                    DonVi = u.DonVi?.TenDonVi,
                     u.Address,
                     u.PhoneNumber,
                     u.IsActive,
                     Roles = roles,
-                    Permissions = u.UserPermissions
-                        .Where(up => up.IsGranted)
-                        .Select(up => up.Permission.Name)
-                        .ToList()
+                    Permissions = directPermissions,
+                    RolePermissions = rolePermissions,
+                    EffectivePermissions = effectivePermissions
                 });
             }
 
@@ -61,6 +79,7 @@ namespace KPITrackerAPI.Services
         public async Task<object?> GetUserByIdAsync(string id)
         {
             var user = await _userManager.Users
+                .Include(u => u.DonVi)
                 .Include(u => u.UserPermissions)
                 .ThenInclude(up => up.Permission)
                 .FirstOrDefaultAsync(u => u.Id == id);
@@ -68,6 +87,18 @@ namespace KPITrackerAPI.Services
             if (user == null) return null;
 
             var roles = await _userManager.GetRolesAsync(user);
+            var rolePermissions = await _context.RolePermissions
+                .Where(rolePermission => rolePermission.Role != null
+                    && rolePermission.Permission != null
+                    && roles.Contains(rolePermission.Role.Name))
+                .Select(rolePermission => rolePermission.Permission.Name)
+                .Distinct()
+                .ToListAsync();
+            var directPermissions = user.UserPermissions
+                .Where(up => up.IsGranted)
+                .Select(up => up.Permission.Name)
+                .ToList();
+            var effectivePermissions = await _permissionService.GetPermissionsAsync(user);
 
             return new
             {
@@ -75,14 +106,16 @@ namespace KPITrackerAPI.Services
                 user.UserName,
                 user.Email,
                 user.FullName,
+                DonViId = user.DonViId,
+                MaDonVi = user.DonVi?.MaDonVi,
+                DonVi = user.DonVi?.TenDonVi,
                 user.Address,
                 user.PhoneNumber,
                 user.IsActive,
                 Roles = roles,
-                Permissions = user.UserPermissions
-                    .Where(up => up.IsGranted)
-                    .Select(up => up.Permission.Name)
-                    .ToList()
+                Permissions = directPermissions,
+                RolePermissions = rolePermissions,
+                EffectivePermissions = effectivePermissions
             };
         }
 
@@ -90,6 +123,15 @@ namespace KPITrackerAPI.Services
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) throw new Exception("User not found");
+
+            if (dto.DonViId.HasValue)
+            {
+                var donVi = await _context.DonVis.FirstOrDefaultAsync(x => x.Id == dto.DonViId.Value);
+                if (donVi == null)
+                    throw new Exception("Đơn vị không tồn tại");
+
+                user.DonViId = donVi.Id;
+            }
 
             if (dto.FullName != null) user.FullName = dto.FullName;
             if (dto.Address != null) user.Address = dto.Address;
@@ -257,6 +299,17 @@ namespace KPITrackerAPI.Services
         public async Task DeleteRoleAsync(string roleName)
         {
             var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null)
+                throw new Exception("Role not found");
+
+            var result = await _roleManager.DeleteAsync(role);
+            if (!result.Succeeded)
+                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+
+        public async Task DeleteRoleByIdAsync(string roleId)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
             if (role == null)
                 throw new Exception("Role not found");
 

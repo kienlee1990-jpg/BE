@@ -106,6 +106,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
+        builder.Entity<ApplicationUser>(entity =>
+        {
+            entity.HasOne(x => x.DonVi)
+                  .WithMany()
+                  .HasForeignKey(x => x.DonViId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
         // =====================================================
         // DanhMucChiTieu
         // =====================================================

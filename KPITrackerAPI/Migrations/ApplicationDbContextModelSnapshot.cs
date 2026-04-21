@@ -41,6 +41,9 @@ namespace KPITrackerAPI.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<long?>("DonViId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -93,6 +96,8 @@ namespace KPITrackerAPI.Migrations
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("DonViId");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
@@ -1014,6 +1019,16 @@ namespace KPITrackerAPI.Migrations
                     b.Navigation("DonViCha");
                 });
 
+            modelBuilder.Entity("KPITrackerAPI.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("KPITrackerAPI.Entities.DonVi", "DonVi")
+                        .WithMany()
+                        .HasForeignKey("DonViId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DonVi");
+                });
+
             modelBuilder.Entity("KPITrackerAPI.Entities.TheoDoiThucHienKPI", b =>
                 {
                     b.HasOne("KPITrackerAPI.Entities.ChiTietGiaoChiTieu", "ChiTietGiaoChiTieu")
@@ -1135,6 +1150,8 @@ namespace KPITrackerAPI.Migrations
 
             modelBuilder.Entity("KPITrackerAPI.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("DonVi");
+
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("UserPermissions");

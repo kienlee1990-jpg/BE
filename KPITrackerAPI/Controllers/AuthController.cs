@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+Ôªøusing Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,16 +18,16 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ApplicationDbContext _context; // ?? thÍm dÚng n‡y
+    private readonly ApplicationDbContext _context; // ?? th√™m d√≤ng n√†y
 
     public AuthController(
         IAuthService authService,
         UserManager<ApplicationUser> userManager,
-        ApplicationDbContext context) // ?? inject v‡o d‚y
+        ApplicationDbContext context) // ?? inject v√†o d√¢y
     {
         _authService = authService;
         _userManager = userManager;
-        _context = context; // ?? g·n v‡o d‚y
+        _context = context; // ?? g√°n v√†o d√¢y
     }
 
     // ================= REGISTER =================
@@ -50,27 +50,27 @@ public class AuthController : ControllerBase
         }
         catch (Exception ex)
         {
-            // ?? T‡i kho?n b? khÛa
+            // ?? T√†i kho?n b? kh√≥a
             if (ex.Message == "ACCOUNT_INACTIVE")
             {
                 return StatusCode(403, new
                 {
                     code = "ACCOUNT_INACTIVE",
-                    message = "T‡i kho?n d„ b? khÛa"
+                    message = "T√†i kho?n d√£ b? kh√≥a"
                 });
             }
 
-            // ? Sai t‡i kho?n / m?t kh?u
+            // ? Sai t√†i kho?n / m?t kh?u
             if (ex.Message == "INVALID_CREDENTIALS")
             {
                 return Unauthorized(new
                 {
                     code = "INVALID_CREDENTIALS",
-                    message = "Sai t‡i kho?n ho?c m?t kh?u"
+                    message = "Sai t√†i kho?n ho?c m?t kh?u"
                 });
             }
 
-            // ?? L?i kh·c
+            // ?? L?i kh√°c
             return StatusCode(500, new
             {
                 code = "SERVER_ERROR",
@@ -105,8 +105,8 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(userId))
             return Unauthorized("Invalid token");
 
-        // Khai b·o ki?u rı r‡ng cho tuple
-        (string? id, string? email, string? fullName, List<string> roles, List<string> permissions)
+        // Khai b√°o ki?u r√µ r√†ng cho tuple
+        (string? id, string? userName, string? email, string? fullName, long? donViId, string? donVi, string? maDonVi, List<string> roles, List<string> permissions, List<string> rolePermissions)
             = await _authService.GetCurrentUserAsync(userId);
 
         if (id == null)
@@ -115,26 +115,38 @@ public class AuthController : ControllerBase
         return Ok(new
         {
             UserId = id,
+            UserName = userName,
             Email = email,
             FullName = fullName,
+            DonViId = donViId,
+            DonVi = donVi,
+            MaDonVi = maDonVi,
             Roles = roles,
-            Permissions = permissions
+            Permissions = permissions,
+            RolePermissions = rolePermissions
         });
     }
 
     // ================= FORGOT PASSWORD =================
     [HttpPost("forgot-password")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> ForgotPassword([FromBody] RequestPasswordResetDto dto)
     {
-        await _authService.RequestPasswordResetAsync(dto);
-        return Ok("Reset password email sent");
+        var result = await _authService.RequestPasswordResetAsync(dto);
+        return Ok(new
+        {
+            Email = result.Email,
+            Token = result.Token
+        });
     }
 
     // ================= RESET PASSWORD =================
     [HttpPost("reset-password")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
     {
         await _authService.ResetPasswordAsync(dto);
         return NoContent();
     }
 }
+
