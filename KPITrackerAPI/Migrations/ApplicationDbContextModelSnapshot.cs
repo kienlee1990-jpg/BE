@@ -94,10 +94,10 @@ namespace KPITrackerAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DonViId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("DonViId");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
@@ -135,11 +135,11 @@ namespace KPITrackerAPI.Migrations
                     b.Property<string>("GhiChu")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TieuChiDanhGia")
+                    b.Property<string>("QuyTacDanhGia")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("QuyTacDanhGia")
+                    b.Property<string>("TieuChiDanhGia")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -204,14 +204,18 @@ namespace KPITrackerAPI.Migrations
                     b.Property<decimal?>("GiaTriMucTieu")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("GiaTriMucTieuText")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("KieuSoSanh")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("GiaTriMucTieuText")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LoaiMocSoSanh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("QuyTacDanhGia")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -223,10 +227,6 @@ namespace KPITrackerAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("TieuChiDanhGia")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("QuyTacDanhGia")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -637,6 +637,85 @@ namespace KPITrackerAPI.Migrations
                     b.ToTable("KyBaoCaoKPI");
                 });
 
+            modelBuilder.Entity("KPITrackerAPI.Entities.NhomThiDua", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MaNhom")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MoTa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenNhom")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaNhom")
+                        .IsUnique();
+
+                    b.HasIndex("TenNhom")
+                        .IsUnique();
+
+                    b.ToTable("NhomThiDua");
+                });
+
+            modelBuilder.Entity("KPITrackerAPI.Entities.NhomThiDuaChiTieu", b =>
+                {
+                    b.Property<long>("NhomThiDuaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("DanhMucChiTieuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("NhomThiDuaId", "DanhMucChiTieuId");
+
+                    b.HasIndex("DanhMucChiTieuId");
+
+                    b.ToTable("NhomThiDuaChiTieu");
+                });
+
+            modelBuilder.Entity("KPITrackerAPI.Entities.NhomThiDuaDonVi", b =>
+                {
+                    b.Property<long>("NhomThiDuaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("DonViId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("NhomThiDuaId", "DonViId");
+
+                    b.HasIndex("DonViId");
+
+                    b.ToTable("NhomThiDuaDonVi");
+                });
+
             modelBuilder.Entity("KPITrackerAPI.Entities.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -682,13 +761,13 @@ namespace KPITrackerAPI.Migrations
                     b.Property<decimal?>("GiaTriDauKy")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal?>("GiaTriPhatSinhTrongKy")
+                    b.Property<decimal?>("GiaTriLuyKe")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("GiaTriPhatSinhLuyKe")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal?>("GiaTriLuyKe")
+                    b.Property<decimal?>("GiaTriPhatSinhTrongKy")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("GiaTriThucHienTrongKy")
@@ -929,6 +1008,16 @@ namespace KPITrackerAPI.Migrations
                     b.ToTable("RolePermissions");
                 });
 
+            modelBuilder.Entity("KPITrackerAPI.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("KPITrackerAPI.Entities.DonVi", "DonVi")
+                        .WithMany()
+                        .HasForeignKey("DonViId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DonVi");
+                });
+
             modelBuilder.Entity("KPITrackerAPI.Entities.CauHinhNguongDanhGiaKPI", b =>
                 {
                     b.HasOne("KPITrackerAPI.Entities.DanhMucChiTieu", "DanhMucChiTieu")
@@ -1019,14 +1108,42 @@ namespace KPITrackerAPI.Migrations
                     b.Navigation("DonViCha");
                 });
 
-            modelBuilder.Entity("KPITrackerAPI.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("KPITrackerAPI.Entities.NhomThiDuaChiTieu", b =>
+                {
+                    b.HasOne("KPITrackerAPI.Entities.DanhMucChiTieu", "DanhMucChiTieu")
+                        .WithMany()
+                        .HasForeignKey("DanhMucChiTieuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KPITrackerAPI.Entities.NhomThiDua", "NhomThiDua")
+                        .WithMany("NhomThiDuaChiTieus")
+                        .HasForeignKey("NhomThiDuaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DanhMucChiTieu");
+
+                    b.Navigation("NhomThiDua");
+                });
+
+            modelBuilder.Entity("KPITrackerAPI.Entities.NhomThiDuaDonVi", b =>
                 {
                     b.HasOne("KPITrackerAPI.Entities.DonVi", "DonVi")
                         .WithMany()
                         .HasForeignKey("DonViId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KPITrackerAPI.Entities.NhomThiDua", "NhomThiDua")
+                        .WithMany("NhomThiDuaDonVis")
+                        .HasForeignKey("NhomThiDuaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("DonVi");
+
+                    b.Navigation("NhomThiDua");
                 });
 
             modelBuilder.Entity("KPITrackerAPI.Entities.TheoDoiThucHienKPI", b =>
@@ -1150,8 +1267,6 @@ namespace KPITrackerAPI.Migrations
 
             modelBuilder.Entity("KPITrackerAPI.Entities.ApplicationUser", b =>
                 {
-                    b.Navigation("DonVi");
-
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("UserPermissions");
@@ -1179,6 +1294,13 @@ namespace KPITrackerAPI.Migrations
                     b.Navigation("DanhGiaKPIs");
 
                     b.Navigation("TheoDoiThucHienKPIs");
+                });
+
+            modelBuilder.Entity("KPITrackerAPI.Entities.NhomThiDua", b =>
+                {
+                    b.Navigation("NhomThiDuaChiTieus");
+
+                    b.Navigation("NhomThiDuaDonVis");
                 });
 #pragma warning restore 612, 618
         }

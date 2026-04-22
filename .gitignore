@@ -2,6 +2,7 @@
 bin/
 obj/
 _build_check/
+_deploy/
 
 # Visual Studio
 .vs/
@@ -13,9 +14,14 @@ TestResults/
 
 # Logs
 *.log
+logs/
+backend-run*.log
 
 # Local app settings
 **/appsettings.Development.json
+tmp-response.json
+_staging/
+_fe_*/
 
 # Rider (nếu có)
 .idea/
