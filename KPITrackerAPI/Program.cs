@@ -93,6 +93,27 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowVue",
         policy =>
         {
+            var configuredOrigins = builder.Configuration
+                .GetSection("Cors:AllowedOrigins")
+                .Get<string[]>();
+
+            if (configuredOrigins is { Length: > 0 })
+            {
+                policy.WithOrigins(configuredOrigins)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+                return;
+            }
+
+            var clientUrl = builder.Configuration["App:ClientUrl"];
+            if (!string.IsNullOrWhiteSpace(clientUrl))
+            {
+                policy.WithOrigins(clientUrl)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+                return;
+            }
+
             policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
