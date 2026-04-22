@@ -186,7 +186,11 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
-    await dbContext.Database.MigrateAsync();
+    var autoMigrateOnStartup = builder.Configuration.GetValue<bool>("AutoMigrateOnStartup");
+    if (autoMigrateOnStartup)
+    {
+        await dbContext.Database.MigrateAsync();
+    }
     await SeedAdminPermissions.SeedAsync(services);
     await SeedDanhGiaNguongMacDinh.SeedAsync(services);
 }
