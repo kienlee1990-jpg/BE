@@ -324,20 +324,8 @@ namespace KPITrackerAPI.Services
 
             var batBuocDatTatCa = chiTiet.DanhMucChiTieu?.BatBuocDatTatCaTieuChiCon ?? true;
             var tyLeHoanThanh = TinhTyLeTongHop(childEvaluations, batBuocDatTatCa);
-            var (xepLoai, ketQua) = await XacDinhXepLoaiVaKetQuaAsync(
-                chiTiet,
-                kyBaoCao,
-                tyLeHoanThanh);
-            ketQua = GetDanhGiaLabel(xepLoai);
-
-            var coConKhongDat = childEvaluations.Any(x => !LaTrangThaiHoanThanh(x.XepLoai));
-            var coConDat = childEvaluations.Any(x => LaTrangThaiHoanThanh(x.XepLoai));
-
-            if ((batBuocDatTatCa && coConKhongDat) || (!batBuocDatTatCa && !coConDat))
-            {
-                xepLoai = XacDinhTrangThaiThatBai(chiTiet, kyBaoCao);
-                ketQua = GetDanhGiaLabel(xepLoai);
-            }
+            var xepLoai = XacDinhXepLoaiTongHop(chiTiet, kyBaoCao, childEvaluations, childIds, batBuocDatTatCa);
+            var ketQua = GetDanhGiaLabel(xepLoai);
 
             var danhGia = await _context.DanhGiaKPIs
                 .FirstOrDefaultAsync(x =>
@@ -662,6 +650,75 @@ namespace KPITrackerAPI.Services
         private static bool LaTrangThaiHoanThanh(string? xepLoai)
         {
             return DanhGiaKPIConstants.LaTrangThaiHoanThanh(xepLoai);
+        }
+
+        private static string XacDinhXepLoaiTongHop(
+            ChiTietGiaoChiTieu chiTiet,
+            KyBaoCaoKPI kyBaoCao,
+            IReadOnlyCollection<DanhGiaKPI> childEvaluations,
+            IReadOnlyCollection<long> childIds,
+            bool batBuocDatTatCa)
+        {
+            var evaluatedChildIds = childEvaluations
+                .Select(x => x.ChiTietGiaoChiTieuId)
+                .ToHashSet();
+            var hasMissingChild = childIds.Any(id => !evaluatedChildIds.Contains(id));
+            var completedChildren = childEvaluations
+                .Where(x => LaTrangThaiHoanThanh(x.XepLoai))
+                .ToList();
+
+            if (batBuocDatTatCa)
+            {
+                if (hasMissingChild || completedChildren.Count != childIds.Count)
+                {
+                    return XacDinhTrangThaiChuaDatTongHop(chiTiet, kyBaoCao, childEvaluations, hasMissingChild);
+                }
+
+                return XacDinhTrangThaiHoanThanhTongHop(completedChildren, preferBest: false);
+            }
+
+            if (completedChildren.Count > 0)
+            {
+                return XacDinhTrangThaiHoanThanhTongHop(completedChildren, preferBest: true);
+            }
+
+            return XacDinhTrangThaiChuaDatTongHop(chiTiet, kyBaoCao, childEvaluations, hasMissingChild);
+        }
+
+        private static string XacDinhTrangThaiHoanThanhTongHop(
+            IReadOnlyCollection<DanhGiaKPI> completedChildren,
+            bool preferBest)
+        {
+            if (preferBest)
+            {
+                return completedChildren.Any(x => NormalizeKey(x.XepLoai) == DanhGiaKPIConstants.XepLoai.HoanThanhVuotMuc)
+                    ? DanhGiaKPIConstants.XepLoai.HoanThanhVuotMuc
+                    : DanhGiaKPIConstants.XepLoai.HoanThanh;
+            }
+
+            return completedChildren.Any(x => NormalizeKey(x.XepLoai) == DanhGiaKPIConstants.XepLoai.HoanThanh)
+                ? DanhGiaKPIConstants.XepLoai.HoanThanh
+                : DanhGiaKPIConstants.XepLoai.HoanThanhVuotMuc;
+        }
+
+        private static string XacDinhTrangThaiChuaDatTongHop(
+            ChiTietGiaoChiTieu chiTiet,
+            KyBaoCaoKPI kyBaoCao,
+            IReadOnlyCollection<DanhGiaKPI> childEvaluations,
+            bool hasMissingChild)
+        {
+            if (childEvaluations.Any(x => NormalizeKey(x.XepLoai) == DanhGiaKPIConstants.XepLoai.ChuaCauHinh))
+            {
+                return DanhGiaKPIConstants.XepLoai.ChuaCauHinh;
+            }
+
+            if (hasMissingChild ||
+                childEvaluations.Any(x => NormalizeKey(x.XepLoai) == DanhGiaKPIConstants.XepLoai.ChuaDanhGia))
+            {
+                return DanhGiaKPIConstants.XepLoai.ChuaDanhGia;
+            }
+
+            return XacDinhTrangThaiThatBai(chiTiet, kyBaoCao);
         }
 
         private static string GetDanhGiaLabel(string? xepLoai)
