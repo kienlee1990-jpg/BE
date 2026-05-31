@@ -6,6 +6,8 @@ namespace KPITrackerAPI.DTOs.TheoDoiThucHienKPI
 
         public long ChiTietGiaoChiTieuId { get; set; }
         public string? TenChiTieu { get; set; }
+        public string? TieuChiDanhGia { get; set; }
+        public long? DonViNhanId { get; set; }
         public string? TenDonViNhan { get; set; }
 
         public long KyBaoCaoKPIId { get; set; }

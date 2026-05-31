@@ -92,7 +92,72 @@ namespace KPITrackerAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpPost("{id:long}/submit")]
+        public async Task<IActionResult> Submit(long id)
+        {
+            try
+            {
+                var data = await _service.SubmitAsync(id);
+                if (data == null)
+                    return NotFound(new { message = "Khong tim thay theo doi thuc hien KPI." });
 
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("{id:long}/approve")]
+        public async Task<IActionResult> Approve(long id)
+        {
+            try
+            {
+                var data = await _service.ApproveAsync(id);
+                if (data == null)
+                    return NotFound(new { message = "Không tìm th?y theo dõi th?c hi?n KPI." });
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("{id:long}/return-for-reentry")]
+        public async Task<IActionResult> ReturnForReEntry(long id)
+        {
+            try
+            {
+                var result = await _service.ReturnForReEntryAsync(id);
+                if (!result)
+                    return NotFound(new { message = "Không tìm th?y theo dõi th?c hi?n KPI." });
+
+                return Ok(new { message = "Ðã g?i tr? yêu c?u nh?p l?i." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpPost("{id:long}/resubmit-returned")]
+        public async Task<IActionResult> ResubmitReturned(long id)
+        {
+            try
+            {
+                var data = await _service.ResubmitReturnedAsync(id);
+                if (data == null)
+                    return NotFound(new { message = "Không tìm th?y theo dõi th?c hi?n KPI." });
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete(long id)
         {

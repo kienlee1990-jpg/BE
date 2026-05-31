@@ -16,6 +16,8 @@ public static class AppPermissions
     public const string ViewAssignedTargetsList = "ViewAssignedTargetsList";
 
     public const string SubmitPeriodicReports = "SubmitPeriodicReports";
+    public const string ViewReturnedReports = "ViewReturnedReports";
+    public const string ReviewPendingReports = "ReviewPendingReports";
     public const string ViewExecutionProgress = "ViewExecutionProgress";
     public const string ViewUnitsPendingUpdate = "ViewUnitsPendingUpdate";
 
@@ -50,6 +52,8 @@ public static class AppPermissions
         AssignTargetsToCadp,
         ViewAssignedTargetsList,
         SubmitPeriodicReports,
+        ViewReturnedReports,
+        ReviewPendingReports,
         ViewExecutionProgress,
         ViewUnitsPendingUpdate,
         ConfigureEvaluationThresholds,

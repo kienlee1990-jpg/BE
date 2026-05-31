@@ -105,6 +105,22 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(userId))
             return Unauthorized("Invalid token");
 
+        var currentUser = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (currentUser == null)
+            return Unauthorized("Invalid token");
+
+        if (!currentUser.IsActive)
+        {
+            return StatusCode(403, new
+            {
+                code = "ACCOUNT_INACTIVE",
+                message = "Tài khoản đã bị khóa hoặc hết hạn. Vui lòng đăng nhập lại."
+            });
+        }
+
         // Khai báo ki?u rõ ràng cho tuple
         (string? id, string? userName, string? email, string? fullName, long? donViId, string? donVi, string? maDonVi, List<string> roles, List<string> permissions, List<string> rolePermissions)
             = await _authService.GetCurrentUserAsync(userId);

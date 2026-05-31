@@ -9,6 +9,11 @@ namespace KPITrackerAPI.Services
 {
     public class TheoDoiThucHienKPIService : ITheoDoiThucHienKPIService
     {
+        private const string TrangThaiChoXetDuyet = "CHO_XET_DUYET";
+        private const string TrangThaiChoGui = "CHO_GUI";
+        private const string TrangThaiTraLaiNhapLai = "TRA_LAI_NHAP_LAI";
+        private const string TrangThaiDaGhiNhan = "MOI_TAO";
+
         private readonly ApplicationDbContext _context;
         private readonly IDanhGiaKPIService _danhGiaKPIService;
 
@@ -120,18 +125,13 @@ namespace KPITrackerAPI.Services
                 GiaTriLuyKe = 0,
                 GiaTriPhatSinhLuyKe = 0,
                 NhanXet = dto.NhanXet?.Trim(),
-                TrangThai = "MOI_TAO",
+                TrangThai = TrangThaiChoGui,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = "system"
             };
 
             _context.TheoDoiThucHienKPIs.Add(entity);
             await _context.SaveChangesAsync();
-
-            await RecalculateTheoDoiChainAsync(entity.ChiTietGiaoChiTieuId);
-            await _danhGiaKPIService.SynchronizeDanhGiaForChiTietAsync(
-                entity.ChiTietGiaoChiTieuId,
-                entity.CreatedBy);
 
             var created = await _context.TheoDoiThucHienKPIs
                 .Include(x => x.ChiTietGiaoChiTieu)
@@ -190,6 +190,121 @@ namespace KPITrackerAPI.Services
                 .FirstAsync(x => x.Id == entity.Id);
 
             return MapToDto(updated);
+        }
+
+        public async Task<TheoDoiThucHienKPIDto?> SubmitAsync(long id)
+        {
+            var entity = await _context.TheoDoiThucHienKPIs.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+            {
+                return null;
+            }
+
+            if (!string.Equals(entity.TrangThai, TrangThaiChoGui, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Chi co the gui bao cao dang o trang thai cho gui.");
+            }
+
+            entity.TrangThai = TrangThaiChoXetDuyet;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedBy = "system";
+
+            await _context.SaveChangesAsync();
+
+            var submitted = await _context.TheoDoiThucHienKPIs
+                .Include(x => x.ChiTietGiaoChiTieu)
+                    .ThenInclude(x => x!.DanhMucChiTieu)
+                .Include(x => x.ChiTietGiaoChiTieu)
+                    .ThenInclude(x => x!.DonViNhan)
+                .Include(x => x.KyBaoCaoKPI)
+                .FirstAsync(x => x.Id == entity.Id);
+
+            return MapToDto(submitted);
+        }
+
+        public async Task<TheoDoiThucHienKPIDto?> ApproveAsync(long id)
+        {
+            var entity = await _context.TheoDoiThucHienKPIs.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+            {
+                return null;
+            }
+
+            if (!string.Equals(entity.TrangThai, TrangThaiChoXetDuyet, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Bao cao nay khong o trang thai cho xet duyet.");
+            }
+
+            entity.TrangThai = TrangThaiDaGhiNhan;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedBy = "system";
+
+            await _context.SaveChangesAsync();
+            await RecalculateTheoDoiChainAsync(entity.ChiTietGiaoChiTieuId);
+            await _danhGiaKPIService.SynchronizeDanhGiaForChiTietAsync(
+                entity.ChiTietGiaoChiTieuId,
+                entity.UpdatedBy);
+
+            var approved = await _context.TheoDoiThucHienKPIs
+                .Include(x => x.ChiTietGiaoChiTieu)
+                    .ThenInclude(x => x!.DanhMucChiTieu)
+                .Include(x => x.ChiTietGiaoChiTieu)
+                    .ThenInclude(x => x!.DonViNhan)
+                .Include(x => x.KyBaoCaoKPI)
+                .FirstAsync(x => x.Id == entity.Id);
+
+            return MapToDto(approved);
+        }
+
+        public async Task<bool> ReturnForReEntryAsync(long id)
+        {
+            var entity = await _context.TheoDoiThucHienKPIs.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            if (!string.Equals(entity.TrangThai, TrangThaiChoXetDuyet, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Chi co the gui tra bao cao dang cho xet duyet.");
+            }
+
+            entity.TrangThai = TrangThaiTraLaiNhapLai;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedBy = "system";
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<TheoDoiThucHienKPIDto?> ResubmitReturnedAsync(long id)
+        {
+            var entity = await _context.TheoDoiThucHienKPIs.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+            {
+                return null;
+            }
+
+            if (!string.Equals(entity.TrangThai, TrangThaiTraLaiNhapLai, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Chi co the gui lai bao cao dang bi tra ve.");
+            }
+
+            entity.TrangThai = TrangThaiChoXetDuyet;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedBy = "system";
+
+            await _context.SaveChangesAsync();
+
+            var resubmitted = await _context.TheoDoiThucHienKPIs
+                .Include(x => x.ChiTietGiaoChiTieu)
+                    .ThenInclude(x => x!.DanhMucChiTieu)
+                .Include(x => x.ChiTietGiaoChiTieu)
+                    .ThenInclude(x => x!.DonViNhan)
+                .Include(x => x.KyBaoCaoKPI)
+                .FirstAsync(x => x.Id == entity.Id);
+
+            return MapToDto(resubmitted);
         }
 
         public async Task<bool> DeleteAsync(long id)
@@ -299,12 +414,19 @@ namespace KPITrackerAPI.Services
                 .Where(x => x.ChiTietGiaoChiTieuId == chiTietGiaoChiTieuId)
                 .ToListAsync();
 
-            if (records.Count == 0)
+            var ghiNhanRecords = records
+                .Where(x =>
+                    !string.Equals(x.TrangThai, TrangThaiChoGui, StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(x.TrangThai, TrangThaiChoXetDuyet, StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(x.TrangThai, TrangThaiTraLaiNhapLai, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (ghiNhanRecords.Count == 0)
             {
                 return;
             }
 
-            var ordered = records
+            var ordered = ghiNhanRecords
                 .OrderBy(x => x.KyBaoCaoKPI!.Nam)
                 .ThenBy(x => ThuTuLoaiKy(x.KyBaoCaoKPI!.LoaiKy))
                 .ThenBy(x => x.KyBaoCaoKPI!.SoKy ?? 0)
@@ -368,6 +490,8 @@ namespace KPITrackerAPI.Services
                 ChiTietGiaoChiTieuId = x.ChiTietGiaoChiTieuId,
                 MaChiTieu = x.ChiTietGiaoChiTieu?.DanhMucChiTieu?.MaChiTieu,
                 TenChiTieu = x.ChiTietGiaoChiTieu?.DanhMucChiTieu?.TenChiTieu,
+                TieuChiDanhGia = x.ChiTietGiaoChiTieu?.TieuChiDanhGia ?? x.ChiTietGiaoChiTieu?.DanhMucChiTieu?.LoaiChiTieu,
+                DonViNhanId = x.ChiTietGiaoChiTieu?.DonViNhanId,
                 TenDonViNhan = x.ChiTietGiaoChiTieu?.DonViNhan?.TenDonVi,
 
                 KyBaoCaoKPIId = x.KyBaoCaoKPIId,
