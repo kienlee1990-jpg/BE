@@ -10,6 +10,9 @@ namespace KPITrackerAPI.DTOs.DanhMucChiTieu
         public string CapApDung { get; set; } = string.Empty;
         public string? LinhVucNghiepVu { get; set; }
         public string? DonViTinh { get; set; }
+        public long? DonViChuTriId { get; set; }
+        public string? MaDonViChuTri { get; set; }
+        public string? TenDonViChuTri { get; set; }
         public string? MoTa { get; set; }
         public string? HuongDanTinhToan { get; set; }
         public bool CoChoPhepPhanRa { get; set; }

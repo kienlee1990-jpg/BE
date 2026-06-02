@@ -39,6 +39,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserAccessScopeService, UserAccessScopeService>();
 builder.Services.AddScoped<IDanhMucChiTieuService, DanhMucChiTieuService>();
 builder.Services.AddScoped<IDotGiaoChiTieuService, DotGiaoChiTieuService>();
 builder.Services.AddScoped<IChiTietGiaoChiTieuService, ChiTietGiaoChiTieuService>();

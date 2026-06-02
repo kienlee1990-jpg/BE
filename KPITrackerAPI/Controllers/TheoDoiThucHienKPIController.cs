@@ -127,11 +127,11 @@ namespace KPITrackerAPI.Controllers
         }
 
         [HttpPost("{id:long}/return-for-reentry")]
-        public async Task<IActionResult> ReturnForReEntry(long id)
+        public async Task<IActionResult> ReturnForReEntry(long id, [FromBody] ReturnTheoDoiThucHienKPIDto? dto)
         {
             try
             {
-                var result = await _service.ReturnForReEntryAsync(id);
+                var result = await _service.ReturnForReEntryAsync(id, dto?.LyDo);
                 if (!result)
                     return NotFound(new { message = "Không tìm th?y theo dõi th?c hi?n KPI." });
 

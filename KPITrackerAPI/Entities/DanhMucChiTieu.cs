@@ -58,6 +58,8 @@ namespace KPITrackerAPI.Entities
 
         public long? ChiTieuChaId { get; set; }
 
+        public long? DonViChuTriId { get; set; }
+
         public int? ThuTuHienThi { get; set; }
 
         public bool BatBuocDatTatCaTieuChiCon { get; set; } = true;
@@ -67,6 +69,9 @@ namespace KPITrackerAPI.Entities
 
         [ForeignKey(nameof(ChiTieuChaId))]
         public DanhMucChiTieu? ChiTieuCha { get; set; }
+
+        [ForeignKey(nameof(DonViChuTriId))]
+        public DonVi? DonViChuTri { get; set; }
 
         public ICollection<ChiTietGiaoChiTieu> ChiTietGiaoChiTieux { get; set; } = new List<ChiTietGiaoChiTieu>();
         public ICollection<DanhMucChiTieu> TieuChiCons { get; set; } = new List<DanhMucChiTieu>();

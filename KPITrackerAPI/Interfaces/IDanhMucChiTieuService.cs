@@ -15,6 +15,7 @@ namespace KPITrackerAPI.Interfaces
 
         Task<DanhMucChiTieuResponseDto?> GetByIdAsync(long id);
         Task<DanhMucChiTieuResponseDto?> UpdateAsync(long id, UpdateDanhMucChiTieuDto dto);
+        Task<DanhMucChiTieuResponseDto?> AssignDonViChuTriAsync(long id, AssignDonViChuTriDto dto);
         Task<bool> DeleteAsync(long id);
     }
 }

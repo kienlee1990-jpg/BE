@@ -13,7 +13,7 @@ namespace KPITrackerAPI.Interfaces
         Task<TheoDoiThucHienKPIDto?> UpdateAsync(long id, UpdateTheoDoiThucHienKPIDto dto);
         Task<TheoDoiThucHienKPIDto?> SubmitAsync(long id);
         Task<TheoDoiThucHienKPIDto?> ApproveAsync(long id);
-        Task<bool> ReturnForReEntryAsync(long id);
+        Task<bool> ReturnForReEntryAsync(long id, string? lyDo);
         Task<TheoDoiThucHienKPIDto?> ResubmitReturnedAsync(long id);
         Task<bool> DeleteAsync(long id);
     }

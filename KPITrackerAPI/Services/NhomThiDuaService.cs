@@ -10,15 +10,20 @@ namespace KPITrackerAPI.Services
     public class NhomThiDuaService : INhomThiDuaService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserAccessScopeService _accessScope;
 
-        public NhomThiDuaService(ApplicationDbContext context)
+        public NhomThiDuaService(
+            ApplicationDbContext context,
+            IUserAccessScopeService accessScope)
         {
             _context = context;
+            _accessScope = accessScope;
         }
 
         public async Task<List<NhomThiDuaDto>> GetAllAsync()
         {
-            var items = await BuildQuery()
+            var query = await ApplyOwnerScopeAsync(BuildQuery());
+            var items = await query
                 .OrderBy(x => x.TenNhom)
                 .ToListAsync();
 
@@ -27,7 +32,8 @@ namespace KPITrackerAPI.Services
 
         public async Task<NhomThiDuaDto?> GetByIdAsync(long id)
         {
-            var item = await BuildQuery().FirstOrDefaultAsync(x => x.Id == id);
+            var query = await ApplyOwnerScopeAsync(BuildQuery());
+            var item = await query.FirstOrDefaultAsync(x => x.Id == id);
             return item == null ? null : MapToDto(item);
         }
 
@@ -66,7 +72,8 @@ namespace KPITrackerAPI.Services
             _context.Set<NhomThiDua>().Add(entity);
             await _context.SaveChangesAsync();
 
-            var created = await BuildQuery().FirstAsync(x => x.Id == entity.Id);
+            var createdQuery = await ApplyOwnerScopeAsync(BuildQuery());
+            var created = await createdQuery.FirstAsync(x => x.Id == entity.Id);
             return MapToDto(created);
         }
 
@@ -78,6 +85,11 @@ namespace KPITrackerAPI.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
+            {
+                return null;
+            }
+
+            if (!await CanAccessGroupAsync(entity.Id))
             {
                 return null;
             }
@@ -94,7 +106,8 @@ namespace KPITrackerAPI.Services
 
             await _context.SaveChangesAsync();
 
-            var updated = await BuildQuery().FirstAsync(x => x.Id == id);
+            var updatedQuery = await ApplyOwnerScopeAsync(BuildQuery());
+            var updated = await updatedQuery.FirstAsync(x => x.Id == id);
             return MapToDto(updated);
         }
 
@@ -106,6 +119,11 @@ namespace KPITrackerAPI.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
+            {
+                return false;
+            }
+
+            if (!await CanAccessGroupAsync(entity.Id))
             {
                 return false;
             }
@@ -134,6 +152,37 @@ namespace KPITrackerAPI.Services
                 .Include(x => x.NhomThiDuaChiTieus)
                     .ThenInclude(x => x.DanhMucChiTieu)
                         .ThenInclude(x => x!.ChiTieuCha);
+        }
+
+        private async Task<IQueryable<NhomThiDua>> ApplyOwnerScopeAsync(IQueryable<NhomThiDua> query)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (!ownerScopeDonViId.HasValue)
+            {
+                return query;
+            }
+
+            return query.Where(x =>
+                x.NhomThiDuaChiTieus.Any(ct =>
+                    ct.DanhMucChiTieu != null &&
+                    ct.DanhMucChiTieu.DonViChuTriId == ownerScopeDonViId.Value));
+        }
+
+        private async Task<bool> CanAccessGroupAsync(long id)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (!ownerScopeDonViId.HasValue)
+            {
+                return true;
+            }
+
+            return await _context.Set<NhomThiDua>()
+                .AsNoTracking()
+                .AnyAsync(x =>
+                    x.Id == id &&
+                    x.NhomThiDuaChiTieus.Any(ct =>
+                        ct.DanhMucChiTieu != null &&
+                        ct.DanhMucChiTieu.DonViChuTriId == ownerScopeDonViId.Value));
         }
 
         private async Task ValidateRequestAsync(
@@ -191,6 +240,20 @@ namespace KPITrackerAPI.Services
             if (invalidChiTieuIds.Count > 0)
             {
                 throw new Exception("Có chỉ tiêu chi tiết không tồn tại trong cấu hình nhóm thi đua.");
+            }
+
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (ownerScopeDonViId.HasValue)
+            {
+                var unownedChiTieuIds = await _context.DanhMucChiTieus
+                    .Where(x => danhMucChiTieuIds.Contains(x.Id) && x.DonViChuTriId != ownerScopeDonViId.Value)
+                    .Select(x => x.Id)
+                    .ToListAsync();
+
+                if (unownedChiTieuIds.Count > 0)
+                {
+                    throw new Exception("Tai khoan chi duoc cau hinh nhom thi dua voi danh muc chi tieu do don vi cua minh chu tri.");
+                }
             }
 
             var parentIds = await _context.DanhMucChiTieus

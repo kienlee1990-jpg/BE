@@ -11,10 +11,14 @@ namespace KPITrackerAPI.Services
     public class CauHinhNguongDanhGiaKPIService : ICauHinhNguongDanhGiaKPIService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserAccessScopeService _accessScope;
 
-        public CauHinhNguongDanhGiaKPIService(ApplicationDbContext context)
+        public CauHinhNguongDanhGiaKPIService(
+            ApplicationDbContext context,
+            IUserAccessScopeService accessScope)
         {
             _context = context;
+            _accessScope = accessScope;
         }
 
         public async Task<List<CauHinhNguongDanhGiaKPIResponse>> GetAllAsync(CauHinhNguongDanhGiaKPIQueryDto query)
@@ -22,6 +26,8 @@ namespace KPITrackerAPI.Services
             var q = _context.CauHinhNguongDanhGiaKPIs
                 .Include(x => x.DanhMucChiTieu)
                 .AsQueryable();
+
+            q = await ApplyOwnerScopeAsync(q);
 
             if (query.DanhMucChiTieuId.HasValue)
             {
@@ -79,9 +85,11 @@ namespace KPITrackerAPI.Services
 
         public async Task<CauHinhNguongDanhGiaKPIResponse?> GetByIdAsync(long id)
         {
-            return await _context.CauHinhNguongDanhGiaKPIs
+            var query = await ApplyOwnerScopeAsync(_context.CauHinhNguongDanhGiaKPIs
                 .Include(x => x.DanhMucChiTieu)
-                .Where(x => x.Id == id)
+                .Where(x => x.Id == id));
+
+            return await query
                 .Select(x => new CauHinhNguongDanhGiaKPIResponse
                 {
                     Id = x.Id,
@@ -131,6 +139,11 @@ namespace KPITrackerAPI.Services
                 return false;
             }
 
+            if (!await CanAccessConfigEntityAsync(entity))
+            {
+                return false;
+            }
+
             var (normalizedXepLoai, normalizedTieuChiDanhGia, normalizedQuyTacDanhGia) = await ValidateAndNormalizeAsync(dto, id);
 
             entity.DanhMucChiTieuId = dto.DanhMucChiTieuId;
@@ -152,6 +165,11 @@ namespace KPITrackerAPI.Services
         {
             var entity = await _context.CauHinhNguongDanhGiaKPIs.FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
+            {
+                return false;
+            }
+
+            if (!await CanAccessConfigEntityAsync(entity))
             {
                 return false;
             }
@@ -228,6 +246,10 @@ namespace KPITrackerAPI.Services
             if (dto.DanhMucChiTieuId.HasValue)
             {
                 var existsDanhMuc = await _context.DanhMucChiTieus.AnyAsync(x => x.Id == dto.DanhMucChiTieuId.Value);
+                if (existsDanhMuc && !await CanAccessDanhMucAsync(dto.DanhMucChiTieuId.Value))
+                {
+                    throw new Exception("Tai khoan chi duoc cau hinh danh muc chi tieu do don vi cua minh chu tri.");
+                }
                 if (!existsDanhMuc)
                 {
                     throw new Exception("Danh mục chỉ tiêu không tồn tại.");
@@ -272,6 +294,42 @@ namespace KPITrackerAPI.Services
             }
 
             return (normalizedXepLoai, normalizedTieuChiDanhGia, normalizedQuyTacDanhGia);
+        }
+
+        private async Task<IQueryable<CauHinhNguongDanhGiaKPI>> ApplyOwnerScopeAsync(IQueryable<CauHinhNguongDanhGiaKPI> query)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (!ownerScopeDonViId.HasValue)
+            {
+                return query;
+            }
+
+            return query.Where(x =>
+                !x.DanhMucChiTieuId.HasValue ||
+                (x.DanhMucChiTieu != null && x.DanhMucChiTieu.DonViChuTriId == ownerScopeDonViId.Value));
+        }
+
+        private async Task<bool> CanAccessDanhMucAsync(long danhMucChiTieuId)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (!ownerScopeDonViId.HasValue)
+            {
+                return true;
+            }
+
+            return await _context.DanhMucChiTieus
+                .AsNoTracking()
+                .AnyAsync(x => x.Id == danhMucChiTieuId && x.DonViChuTriId == ownerScopeDonViId.Value);
+        }
+
+        private async Task<bool> CanAccessConfigEntityAsync(CauHinhNguongDanhGiaKPI entity)
+        {
+            if (!entity.DanhMucChiTieuId.HasValue)
+            {
+                return true;
+            }
+
+            return await CanAccessDanhMucAsync(entity.DanhMucChiTieuId.Value);
         }
 
         private static void ValidateBusinessRules(

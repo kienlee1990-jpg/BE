@@ -11,15 +11,20 @@ namespace KPITrackerAPI.Services
         private const string LoaiChiTieuPhanRa = "PHAN_RA";
 
         private readonly ApplicationDbContext _context;
+        private readonly IUserAccessScopeService _accessScope;
 
-        public DanhMucChiTieuService(ApplicationDbContext context)
+        public DanhMucChiTieuService(
+            ApplicationDbContext context,
+            IUserAccessScopeService accessScope)
         {
             _context = context;
+            _accessScope = accessScope;
         }
 
         public async Task<DanhMucChiTieuResponseDto> CreateAsync(CreateDanhMucChiTieuDto dto)
         {
             await EnsureCodeNotExistsAsync(dto.MaChiTieu);
+            var donViChuTriId = await ResolveWritableDonViChuTriIdAsync(dto.DonViChuTriId);
 
             var coTieuChiCon = dto.TieuChiDanhGias.Count > 0;
             await ValidateCatalogRequestAsync(
@@ -41,6 +46,7 @@ namespace KPITrackerAPI.Services
                 CapApDung = dto.CapApDung.Trim().ToUpper(),
                 LinhVucNghiepVu = NormalizeNullable(dto.LinhVucNghiepVu),
                 DonViTinh = coTieuChiCon ? null : NormalizeNullable(dto.DonViTinh),
+                DonViChuTriId = donViChuTriId,
                 MoTa = NormalizeNullable(dto.MoTa),
                 HuongDanTinhToan = NormalizeNullable(dto.HuongDanTinhToan),
                 CoChoPhepPhanRa = dto.CoChoPhepPhanRa || coTieuChiCon,
@@ -84,7 +90,9 @@ namespace KPITrackerAPI.Services
             var query = _context.DanhMucChiTieus
                 .AsNoTracking()
                 .Where(x => x.ChiTieuChaId == null)
+                .Include(x => x.DonViChuTri)
                 .Include(x => x.TieuChiCons)
+                    .ThenInclude(x => x.DonViChuTri)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(keyword))
@@ -124,6 +132,12 @@ namespace KPITrackerAPI.Services
                 query = query.Where(x => x.CoChoPhepPhanRa == coChoPhepPhanRa.Value);
             }
 
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (ownerScopeDonViId.HasValue)
+            {
+                query = query.Where(x => x.DonViChuTriId == ownerScopeDonViId.Value);
+            }
+
             var data = await query
                 .OrderBy(x => x.MaChiTieu)
                 .ToListAsync();
@@ -133,6 +147,11 @@ namespace KPITrackerAPI.Services
 
         public async Task<DanhMucChiTieuResponseDto?> GetByIdAsync(long id)
         {
+            if (!await CanAccessCatalogAsync(id))
+            {
+                return null;
+            }
+
             var entity = await LoadTopLevelCatalogAsync(id);
             return entity == null ? null : MapToResponse(entity);
         }
@@ -148,6 +167,12 @@ namespace KPITrackerAPI.Services
                 return null;
             }
 
+            if (!await CanAccessCatalogEntityAsync(entity))
+            {
+                return null;
+            }
+
+            var donViChuTriId = await ResolveWritableDonViChuTriIdAsync(dto.DonViChuTriId);
             var coTieuChiCon = dto.TieuChiDanhGias.Count > 0;
             await ValidateCatalogRequestAsync(
                 entity.MaChiTieu,
@@ -167,6 +192,7 @@ namespace KPITrackerAPI.Services
             entity.CapApDung = dto.CapApDung.Trim().ToUpper();
             entity.LinhVucNghiepVu = NormalizeNullable(dto.LinhVucNghiepVu);
             entity.DonViTinh = coTieuChiCon ? null : NormalizeNullable(dto.DonViTinh);
+            entity.DonViChuTriId = donViChuTriId;
             entity.MoTa = NormalizeNullable(dto.MoTa);
             entity.HuongDanTinhToan = NormalizeNullable(dto.HuongDanTinhToan);
             entity.CoChoPhepPhanRa = dto.CoChoPhepPhanRa || coTieuChiCon;
@@ -202,6 +228,11 @@ namespace KPITrackerAPI.Services
                 return false;
             }
 
+            if (!await CanAccessCatalogEntityAsync(entity))
+            {
+                return false;
+            }
+
             var childIds = entity.TieuChiCons.Select(x => x.Id).ToList();
             var hasAssignments = entity.ChiTietGiaoChiTieux.Any() ||
                                  await _context.ChiTietGiaoChiTieus.AnyAsync(x => childIds.Contains(x.DanhMucChiTieuId));
@@ -221,12 +252,110 @@ namespace KPITrackerAPI.Services
             return true;
         }
 
+        public async Task<DanhMucChiTieuResponseDto?> AssignDonViChuTriAsync(long id, AssignDonViChuTriDto dto)
+        {
+            var entity = await _context.DanhMucChiTieus
+                .FirstOrDefaultAsync(x => x.Id == id && x.ChiTieuChaId == null);
+
+            if (entity == null)
+            {
+                return null;
+            }
+
+            if (!await CanAccessCatalogEntityAsync(entity))
+            {
+                return null;
+            }
+
+            entity.DonViChuTriId = await ResolveWritableDonViChuTriIdAsync(dto.DonViChuTriId);
+            entity.UpdatedAt = DateTime.UtcNow;
+
+            var children = await _context.DanhMucChiTieus
+                .Where(x => x.ChiTieuChaId == entity.Id)
+                .ToListAsync();
+
+            foreach (var child in children)
+            {
+                child.DonViChuTriId = entity.DonViChuTriId;
+                child.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var updated = await LoadTopLevelCatalogAsync(id);
+            return updated == null ? null : MapToResponse(updated);
+        }
+
         private async Task<DanhMucChiTieu?> LoadTopLevelCatalogAsync(long id)
         {
             return await _context.DanhMucChiTieus
                 .AsNoTracking()
+                .Include(x => x.DonViChuTri)
                 .Include(x => x.TieuChiCons)
+                    .ThenInclude(x => x.DonViChuTri)
                 .FirstOrDefaultAsync(x => x.Id == id && x.ChiTieuChaId == null);
+        }
+
+        private async Task<long?> NormalizeDonViChuTriIdAsync(long? donViChuTriId)
+        {
+            if (!donViChuTriId.HasValue || donViChuTriId.Value <= 0)
+            {
+                return null;
+            }
+
+            var donVi = await _context.DonVis
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == donViChuTriId.Value);
+
+            if (donVi == null)
+            {
+                throw new Exception("Don vi chu tri khong ton tai.");
+            }
+
+            var normalizedLoai = (donVi.LoaiDonVi ?? string.Empty).Trim().ToUpper();
+            if (normalizedLoai != "THANH_PHO" && normalizedLoai != "CAP_QUAN_LY")
+            {
+                throw new Exception("Don vi chu tri phai la don vi cap thanh pho hoac cap quan ly.");
+            }
+
+            return donVi.Id;
+        }
+
+        private async Task<long?> ResolveWritableDonViChuTriIdAsync(long? requestedDonViChuTriId)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (!ownerScopeDonViId.HasValue)
+            {
+                return await NormalizeDonViChuTriIdAsync(requestedDonViChuTriId);
+            }
+
+            if (requestedDonViChuTriId.HasValue &&
+                requestedDonViChuTriId.Value > 0 &&
+                requestedDonViChuTriId.Value != ownerScopeDonViId.Value)
+            {
+                throw new Exception("Tai khoan chi duoc quan ly danh muc chi tieu do don vi cua minh chu tri.");
+            }
+
+            return ownerScopeDonViId.Value;
+        }
+
+        private async Task<bool> CanAccessCatalogAsync(long id)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (!ownerScopeDonViId.HasValue)
+            {
+                return true;
+            }
+
+            return await _context.DanhMucChiTieus
+                .AsNoTracking()
+                .AnyAsync(x => x.Id == id && x.ChiTieuChaId == null && x.DonViChuTriId == ownerScopeDonViId.Value);
+        }
+
+        private async Task<bool> CanAccessCatalogEntityAsync(DanhMucChiTieu entity)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            return !ownerScopeDonViId.HasValue || entity.DonViChuTriId == ownerScopeDonViId.Value;
         }
 
         private async Task ValidateCatalogRequestAsync(
@@ -361,6 +490,7 @@ namespace KPITrackerAPI.Services
                     existingChild.TenChiTieu = childDto.value.TenChiTieu.Trim();
                     existingChild.LoaiChiTieu = childDto.value.LoaiChiTieu.Trim().ToUpper();
                     existingChild.DonViTinh = NormalizeNullable(childDto.value.DonViTinh);
+                    existingChild.DonViChuTriId = parent.DonViChuTriId;
                     existingChild.MoTa = NormalizeNullable(childDto.value.MoTa);
                     existingChild.HuongDanTinhToan = NormalizeNullable(childDto.value.HuongDanTinhToan);
                     existingChild.DieuKienHoanThanh = NormalizeNullable(childDto.value.DieuKienHoanThanh);
@@ -395,6 +525,7 @@ namespace KPITrackerAPI.Services
                 CapApDung = parentDto.CapApDung.Trim().ToUpper(),
                 LinhVucNghiepVu = NormalizeNullable(parentDto.LinhVucNghiepVu),
                 DonViTinh = NormalizeNullable(childDto.DonViTinh),
+                DonViChuTriId = parent.DonViChuTriId,
                 MoTa = NormalizeNullable(childDto.MoTa),
                 HuongDanTinhToan = NormalizeNullable(childDto.HuongDanTinhToan),
                 CoChoPhepPhanRa = false,
@@ -428,6 +559,7 @@ namespace KPITrackerAPI.Services
                 CapApDung = parentDto.CapApDung.Trim().ToUpper(),
                 LinhVucNghiepVu = NormalizeNullable(parentDto.LinhVucNghiepVu),
                 DonViTinh = NormalizeNullable(childDto.DonViTinh),
+                DonViChuTriId = parent.DonViChuTriId,
                 MoTa = NormalizeNullable(childDto.MoTa),
                 HuongDanTinhToan = NormalizeNullable(childDto.HuongDanTinhToan),
                 CoChoPhepPhanRa = false,
@@ -464,6 +596,9 @@ namespace KPITrackerAPI.Services
                 CapApDung = entity.CapApDung,
                 LinhVucNghiepVu = entity.LinhVucNghiepVu,
                 DonViTinh = entity.DonViTinh,
+                DonViChuTriId = entity.DonViChuTriId,
+                MaDonViChuTri = entity.DonViChuTri?.MaDonVi,
+                TenDonViChuTri = entity.DonViChuTri?.TenDonVi,
                 MoTa = entity.MoTa,
                 HuongDanTinhToan = entity.HuongDanTinhToan,
                 CoChoPhepPhanRa = entity.CoChoPhepPhanRa,

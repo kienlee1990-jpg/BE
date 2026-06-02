@@ -122,7 +122,7 @@ public class AuthController : ControllerBase
         }
 
         // Khai báo ki?u rõ ràng cho tuple
-        (string? id, string? userName, string? email, string? fullName, long? donViId, string? donVi, string? maDonVi, List<string> roles, List<string> permissions, List<string> rolePermissions)
+        (string? id, string? userName, string? email, string? fullName, long? donViId, string? donVi, string? maDonVi, string? loaiDonVi, List<string> roles, List<string> permissions, List<string> rolePermissions)
             = await _authService.GetCurrentUserAsync(userId);
 
         if (id == null)
@@ -137,6 +137,7 @@ public class AuthController : ControllerBase
             DonViId = donViId,
             DonVi = donVi,
             MaDonVi = maDonVi,
+            LoaiDonVi = loaiDonVi,
             Roles = roles,
             Permissions = permissions,
             RolePermissions = rolePermissions

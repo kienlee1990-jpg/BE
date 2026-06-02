@@ -12,20 +12,26 @@ namespace KPITrackerAPI.Services
     public class DanhGiaKPIService : IDanhGiaKPIService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserAccessScopeService _accessScope;
 
-        public DanhGiaKPIService(ApplicationDbContext context)
+        public DanhGiaKPIService(
+            ApplicationDbContext context,
+            IUserAccessScopeService accessScope)
         {
             _context = context;
+            _accessScope = accessScope;
         }
 
         public async Task<IEnumerable<DanhGiaKPIDto>> GetAllAsync()
         {
-            var items = await _context.DanhGiaKPIs
+            var query = await ApplyOwnerScopeAsync(_context.DanhGiaKPIs
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DanhMucChiTieu)
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DonViNhan)
-                .Include(x => x.KyBaoCaoKPI)
+                .Include(x => x.KyBaoCaoKPI));
+
+            var items = await query
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
@@ -34,12 +40,14 @@ namespace KPITrackerAPI.Services
 
         public async Task<DanhGiaKPIDto?> GetByIdAsync(long id)
         {
-            var item = await _context.DanhGiaKPIs
+            var query = await ApplyOwnerScopeAsync(_context.DanhGiaKPIs
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DanhMucChiTieu)
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DonViNhan)
-                .Include(x => x.KyBaoCaoKPI)
+                .Include(x => x.KyBaoCaoKPI));
+
+            var item = await query
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return item == null ? null : MapToDto(item);
@@ -47,12 +55,14 @@ namespace KPITrackerAPI.Services
 
         public async Task<IEnumerable<DanhGiaKPIDto>> GetByChiTietGiaoChiTieuIdAsync(long chiTietGiaoChiTieuId)
         {
-            var items = await _context.DanhGiaKPIs
+            var query = await ApplyOwnerScopeAsync(_context.DanhGiaKPIs
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DanhMucChiTieu)
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DonViNhan)
-                .Include(x => x.KyBaoCaoKPI)
+                .Include(x => x.KyBaoCaoKPI));
+
+            var items = await query
                 .Where(x => x.ChiTietGiaoChiTieuId == chiTietGiaoChiTieuId)
                 .OrderByDescending(x => x.KyBaoCaoKPIId)
                 .ToListAsync();
@@ -62,12 +72,14 @@ namespace KPITrackerAPI.Services
 
         public async Task<IEnumerable<DanhGiaKPIDto>> GetByKyBaoCaoKPIIdAsync(long kyBaoCaoKPIId)
         {
-            var items = await _context.DanhGiaKPIs
+            var query = await ApplyOwnerScopeAsync(_context.DanhGiaKPIs
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DanhMucChiTieu)
                 .Include(x => x.ChiTietGiaoChiTieu)
                     .ThenInclude(x => x!.DonViNhan)
-                .Include(x => x.KyBaoCaoKPI)
+                .Include(x => x.KyBaoCaoKPI));
+
+            var items = await query
                 .Where(x => x.KyBaoCaoKPIId == kyBaoCaoKPIId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
@@ -81,6 +93,11 @@ namespace KPITrackerAPI.Services
             if (chiTiet == null)
             {
                 throw new Exception("Khong tim thay ChiTietGiaoChiTieu.");
+            }
+
+            if (!await CanAccessChiTietAsync(chiTiet))
+            {
+                throw new Exception("Tai khoan chi duoc danh gia danh muc chi tieu do don vi cua minh chu tri.");
             }
 
             var danhGia = await UpsertDanhGiaCoreAsync(chiTiet, kyBaoCaoKPIId, username, true);
@@ -121,7 +138,13 @@ namespace KPITrackerAPI.Services
 
             var chiTiet = await _context.ChiTietGiaoChiTieus
                 .AsNoTracking()
+                .Include(x => x.DanhMucChiTieu)
                 .FirstOrDefaultAsync(x => x.Id == chiTietGiaoChiTieuId);
+
+            if (chiTiet != null && !await CanAccessChiTietAsync(chiTiet))
+            {
+                return false;
+            }
 
             _context.DanhGiaKPIs.Remove(danhGia);
             await _context.SaveChangesAsync();
@@ -187,6 +210,27 @@ namespace KPITrackerAPI.Services
                 .Include(x => x.ChiTietGiaoChiTieuCons)
                     .ThenInclude(x => x.DanhMucChiTieu)
                 .FirstOrDefaultAsync(x => x.Id == chiTietGiaoChiTieuId);
+        }
+
+        private async Task<IQueryable<DanhGiaKPI>> ApplyOwnerScopeAsync(IQueryable<DanhGiaKPI> query)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            if (!ownerScopeDonViId.HasValue)
+            {
+                return query;
+            }
+
+            return query.Where(x =>
+                x.ChiTietGiaoChiTieu != null &&
+                x.ChiTietGiaoChiTieu.DanhMucChiTieu != null &&
+                x.ChiTietGiaoChiTieu.DanhMucChiTieu.DonViChuTriId == ownerScopeDonViId.Value);
+        }
+
+        private async Task<bool> CanAccessChiTietAsync(ChiTietGiaoChiTieu chiTiet)
+        {
+            var ownerScopeDonViId = await _accessScope.GetCurrentOwnerScopeDonViIdAsync();
+            return !ownerScopeDonViId.HasValue ||
+                   chiTiet.DanhMucChiTieu?.DonViChuTriId == ownerScopeDonViId.Value;
         }
 
         private async Task<List<long>> GetRelevantKyIdsAsync(ChiTietGiaoChiTieu chiTiet)

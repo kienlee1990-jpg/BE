@@ -236,7 +236,7 @@ public class AuthService : IAuthService
     }
 
     // ================= GET ME =================
-    public async Task<(string UserId, string UserName, string Email, string FullName, long? DonViId, string? DonVi, string? MaDonVi, List<string> Roles, List<string> Permissions, List<string> RolePermissions)> GetCurrentUserAsync(string userId)
+    public async Task<(string UserId, string UserName, string Email, string FullName, long? DonViId, string? DonVi, string? MaDonVi, string? LoaiDonVi, List<string> Roles, List<string> Permissions, List<string> RolePermissions)> GetCurrentUserAsync(string userId)
     {
         var user = await _context.Users
             .AsNoTracking()
@@ -244,7 +244,7 @@ public class AuthService : IAuthService
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
-            return (null!, null!, null!, null!, null, null, null, new List<string>(), new List<string>(), new List<string>());
+            return (null!, null!, null!, null!, null, null, null, null, new List<string>(), new List<string>(), new List<string>());
 
         // L?y role
         var roles = (await _userManager.GetRolesAsync(user)).ToList();
@@ -257,7 +257,7 @@ public class AuthService : IAuthService
 
         var permissions = await _permissionService.GetPermissionsAsync(user);
 
-        return (user.Id, user.UserName ?? string.Empty, user.Email ?? string.Empty, user.FullName, user.DonViId, user.DonVi?.TenDonVi, user.DonVi?.MaDonVi, roles, permissions, rolePermissions);
+        return (user.Id, user.UserName ?? string.Empty, user.Email ?? string.Empty, user.FullName, user.DonViId, user.DonVi?.TenDonVi, user.DonVi?.MaDonVi, user.DonVi?.LoaiDonVi, roles, permissions, rolePermissions);
     }
 }
 

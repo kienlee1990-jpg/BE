@@ -76,6 +76,23 @@ namespace KPITrackerAPI.Controllers
             }
         }
 
+        [HttpPatch("{id:long}/don-vi-chu-tri")]
+        public async Task<IActionResult> AssignDonViChuTri(long id, [FromBody] AssignDonViChuTriDto dto)
+        {
+            try
+            {
+                var result = await _service.AssignDonViChuTriAsync(id, dto);
+                if (result == null)
+                    return NotFound(new { message = "Không tìm thấy danh mục chỉ tiêu." });
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

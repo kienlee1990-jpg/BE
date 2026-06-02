@@ -129,6 +129,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                   .WithMany(x => x.TieuChiCons)
                   .HasForeignKey(x => x.ChiTieuChaId)
                   .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.DonViChuTri)
+                  .WithMany()
+                  .HasForeignKey(x => x.DonViChuTriId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // =====================================================
